@@ -5,10 +5,10 @@ public class Preferences : Dialog {
 	private File gtk2_config_file;
 	private File gtk3_config_file;
 
-	private Entry color_value;
+	private ColorButton color_button;
 	private Widget apply_button;
 
-	private string selected_bg_color;
+	private string color_value;
 
 	public Preferences () {
 
@@ -30,6 +30,7 @@ public class Preferences : Dialog {
 	}
 
 	private void set_config () {
+
 		// Detect the theme name
 		// var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		// var gtk_theme = settings.get_string ("gtk-theme");
@@ -46,7 +47,7 @@ public class Preferences : Dialog {
 	private void set_defaults () {
 
 		// Set default config
-		color_value.text = "#398ee7";
+		color_value = "#398ee7";
 	}
 
 	private void read_config () {
@@ -58,7 +59,7 @@ public class Preferences : Dialog {
 				string line;
 				while ((line = dis.read_line (null)) != null) {
 					if ("@define-color selected_bg_color" in line) {
-						color_value.text = line.substring (32, line.length-33);
+						color_value = line.substring (32, line.length-33);
 					}
 				}
 			} catch (Error e) {
@@ -74,20 +75,23 @@ public class Preferences : Dialog {
 		// Create and setup widgets
 		var description = new Gtk.Label ("Change GTK theme color");
 		var color_label = new Label.with_mnemonic ("Color value:");
-		this.color_value = new Entry ();
+
+		// Read config file and set values
+		read_config();
+
+		var color = Gdk.RGBA ();
+		color.parse ("%s".printf(color_value.to_string()));
+		this.color_button = new ColorButton.with_rgba (color);
 
 		// Layout widgets
 		var hbox = new Box (Orientation.HORIZONTAL, 10);
 		hbox.homogeneous = false;
 		hbox.pack_start (color_label, true, true, 0);
-		hbox.pack_start (this.color_value, true, true, 0);
+		hbox.pack_start (this.color_button, true, true, 0);
 		var content = get_content_area () as Box;
 		content.pack_start (description, false, true, 0);
 		content.pack_start (hbox, false, true, 0);
 		content.spacing = 10;
-
-		// Read config file and set values
-		read_config();
 
 		// Add buttons to button area at the bottom
 		this.apply_button = add_button (Stock.APPLY, ResponseType.APPLY);
@@ -99,11 +103,10 @@ public class Preferences : Dialog {
 	}
 
 	private void connect_signals () {
-		color_value.changed.connect (() => {
-			if ("#" in color_value.text || "rgb" in color_value.text) {
-				this.apply_button.sensitive = true;
-			}
-		});
+		color_button.color_set.connect (() => {
+			on_color_set();
+			this.apply_button.sensitive = true;
+		});	
 		this.response.connect (on_response);
 	}
 
@@ -122,20 +125,17 @@ public class Preferences : Dialog {
 		}
 	}
 
+	private void on_color_set () {
+		var color =  color_button.get_rgba ();
+		color_value = "%s".printf(color.to_string());
+	}
+
 	private void on_set_clicked () {
 		write_config ();
-		try {
-			Process.spawn_command_line_sync("notify-send \"Changes applied!\"");
-		} catch (Error e) {
-			stderr.printf ("%s", e.message);
-		}
 		this.apply_button.sensitive = false;
 	}
 
 	private void write_config () {
-		if ("#" in color_value.text || "rgb" in color_value.text) {
-			selected_bg_color = "%s".printf(color_value.text);
-		}
 		if (gtk2_config_file.query_exists ()) {
 			try {
 				gtk2_config_file.delete ();
@@ -146,7 +146,7 @@ public class Preferences : Dialog {
 		try {
 			var dos = new DataOutputStream (gtk2_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("# GTK theme preferences\n");
-			string text = "gtk_color_scheme = \"selected_bg_color:%s\"".printf(selected_bg_color);
+			string text = "gtk_color_scheme = \"selected_bg_color:%s\"".printf(color_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
@@ -165,7 +165,7 @@ public class Preferences : Dialog {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
-			string text = "@define-color selected_bg_color %s;".printf(selected_bg_color);
+			string text = "@define-color selected_bg_color %s;".printf(color_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
