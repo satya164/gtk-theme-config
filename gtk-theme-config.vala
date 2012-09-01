@@ -126,7 +126,7 @@ public class Preferences : Dialog {
 	}
 
 	private void on_color_set () {
-		var color =  color_button.get_rgba ();
+		var color =  this.color_button.get_rgba ();
 		color_value = "%s".printf(color.to_string());
 	}
 
