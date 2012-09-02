@@ -73,24 +73,30 @@ public class Preferences : Dialog {
 	private void create_widgets () {
 
 		// Create and setup widgets
-		var description = new Gtk.Label ("Change GTK theme color");
-		var color_label = new Label.with_mnemonic ("Color value:");
+		var description = new Label ("Change GTK theme color");
+
+		var color_label = new Label ("Selected color:");
+
+		var tip = new Label (null);
+		tip.set_markup ("<b>Tip:</b> Changes will not take effect until you restart the running applications.");
+		tip.set_line_wrap (true);
 
 		// Read config file and set values
 		read_config();
 
 		var color = Gdk.RGBA ();
 		color.parse ("%s".printf(color_value.to_string()));
+
 		this.color_button = new ColorButton.with_rgba (color);
 
 		// Layout widgets
 		var hbox = new Box (Orientation.HORIZONTAL, 10);
-		hbox.homogeneous = false;
 		hbox.pack_start (color_label, true, true, 0);
 		hbox.pack_start (this.color_button, true, true, 0);
 		var content = get_content_area () as Box;
 		content.pack_start (description, false, true, 0);
 		content.pack_start (hbox, false, true, 0);
+		content.pack_start (tip, false, true, 0);
 		content.spacing = 10;
 
 		// Add buttons to button area at the bottom
