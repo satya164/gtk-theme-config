@@ -66,6 +66,15 @@ public class Preferences : Dialog {
 
 	private void set_defaults () {
 
+		// Delete the config file
+		if (gtk3_config_file.query_exists ()) {
+			try {
+				gtk3_config_file.delete ();
+			} catch (Error e) {
+				stderr.printf ("%s", e.message);
+			}
+		}
+
 		// Set default config
 		color_value = "#398ee7";
 	}
@@ -120,7 +129,6 @@ public class Preferences : Dialog {
 		switch (response_id) {
 		case ResponseType.ACCEPT:
 			set_defaults();
-			on_set_clicked ();
 			break;
 		case ResponseType.APPLY:
 			on_set_clicked ();
