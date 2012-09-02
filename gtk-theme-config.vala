@@ -51,10 +51,6 @@ public class Preferences : Dialog {
 					stderr.printf ("%s", e.message);
 				}
 			}
-
-		var gtk2_path = File.new_for_path (Environment.get_home_dir ());
-
-		gtk2_config_file = gtk2_path.get_child (".gtkrc-2.0");
 	}
 
 	private void set_defaults () {
@@ -149,25 +145,6 @@ public class Preferences : Dialog {
 	}
 
 	private void write_config () {
-		if (gtk2_config_file.query_exists ()) {
-			try {
-				gtk2_config_file.delete ();
-			} catch (Error e) {
-				stderr.printf ("%s", e.message);
-			}
-		}
-		try {
-			var dos = new DataOutputStream (gtk2_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
-			dos.put_string ("style \"gtk-theme-config\"\n");
-			string text = "{ bg[SELECTED] = \"%s\" }\nwidget \"*\" style \"gtk-theme-config\nwidget_class \"*\" style \"gtk-theme-config\nclass \"*\" style \"gtk-theme-config".printf(color_value);
-			uint8[] data = text.data;
-			long written = 0;
-			while (written < data.length) {
-				written += dos.write (data[written:data.length]);
-			}
-		} catch (Error e) {
-			stderr.printf ("%s", e.message);
-		}
 		if (gtk3_config_file.query_exists ()) {
 			try {
 				gtk3_config_file.delete ();
