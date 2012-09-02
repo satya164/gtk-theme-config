@@ -19,7 +19,7 @@ public class Preferences : Dialog {
 		try {
 			this.icon = IconTheme.get_default ().load_icon ("preferences-desktop-wallpaper", 48, 0);
 			} catch (Error e) {
-			stderr.printf ("Could not load application icon: %s\n", e.message);
+				stderr.printf ("Could not load application icon: %s\n", e.message);
 			}
 
 		// Methods
@@ -47,7 +47,7 @@ public class Preferences : Dialog {
 			try {
 				gtk3_config_file.get_parent().make_directory(null);
 			} catch (Error e) {
-				stderr.printf ("%s\n", e.message);
+				stderr.printf ("Could not create parent directory: %s\n", e.message);
 			}
 		}
 
@@ -62,7 +62,7 @@ public class Preferences : Dialog {
 					}
 				}
 			} catch (Error e) {
-				stderr.printf ("%s\n", e.message);
+				stderr.printf ("Could not read configuration: %s\n", e.message);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ public class Preferences : Dialog {
 			try {
 				gtk3_config_file.delete ();
 			} catch (Error e) {
-				stderr.printf ("%s\n", e.message);
+				stderr.printf ("Could not reset to defaults: %s\n", e.message);
 			}
 		}
 	}
@@ -156,7 +156,7 @@ public class Preferences : Dialog {
 				written += dos.write (data[written:data.length]);
 			}
 		} catch (Error e) {
-			stderr.printf ("%s\n", e.message);
+			stderr.printf ("Could not write configuration: %s\n", e.message);
 		}
 	}
 }
