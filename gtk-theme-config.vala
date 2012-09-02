@@ -36,12 +36,25 @@ public class Preferences : Dialog {
 		// var gtk_theme = settings.get_string ("gtk-theme");
 
 		// Set the path of config file
-		var gtk2_path = Path.build_filename (Environment.get_home_dir (),
-									  ".gtkrc-2.0");
-		var gtk3_path = Path.build_filename (Environment.get_user_config_dir (),
-									  "gtk-3.0/gtk.css");
-		gtk2_config_file = File.new_for_path (gtk2_path);
-		gtk3_config_file = File.new_for_path (gtk3_path);
+		var gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
+		
+		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
+
+		// Create path if doesn't exist
+		if(!gtk3_config_file.get_parent().query_exists()) {
+
+				gtk3_config_file.get_parent().get_path();
+				
+				try {
+					gtk3_config_file.get_parent().make_directory(null);
+				} catch (Error e) {
+					stderr.printf ("%s", e.message);
+				}
+			}
+
+		var gtk2_path = File.new_for_path (Environment.get_home_dir ());
+
+		gtk2_config_file = gtk2_path.get_child (".gtkrc-2.0");
 	}
 
 	private void set_defaults () {
