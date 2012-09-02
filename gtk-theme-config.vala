@@ -34,18 +34,18 @@ public class Preferences : Dialog {
 		// var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		// var gtk_theme = settings.get_string ("gtk-theme");
 
-		// Set a default color value
+		// Set default values
 		color_value = "#398ee7";
 
 		// Set the path of config file
 		var gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
-		
+
 		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
 
 		// Create path if doesn't exist
 		if (!gtk3_config_file.get_parent().query_exists ()) {
 			try {
-				gtk3_config_file.get_parent().make_directory(null);
+				gtk3_config_file.get_parent().make_directory_with_parents(null);
 			} catch (Error e) {
 				stderr.printf ("Could not create parent directory: %s\n", e.message);
 			}
@@ -86,7 +86,7 @@ public class Preferences : Dialog {
 		// Layout widgets
 		var hbox = new Box (Orientation.HORIZONTAL, 10);
 		hbox.pack_start (color_label, true, true, 0);
-		hbox.pack_start (this.color_button, true, true, 0);
+		hbox.pack_start (color_button, true, true, 0);
 		var content = get_content_area () as Box;
 		content.pack_start (description, false, true, 0);
 		content.pack_start (hbox, false, true, 0);
@@ -106,7 +106,7 @@ public class Preferences : Dialog {
 		color_button.color_set.connect (() => {
 			on_color_set();
 			this.apply_button.sensitive = true;
-		});	
+		});
 		this.response.connect (on_response);
 	}
 
@@ -148,8 +148,8 @@ public class Preferences : Dialog {
 	private void write_config () {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
-			dos.put_string ("/* GTK theme preferences */\n");
-			string text = "@define-color selected_bg_color %s;\n@define-color theme_selected_bg_color %s;".printf(color_value, color_value);
+			dos.put_string ("/* theme preferences */\n");
+			string text = "@define-color selected_bg_color %s;\n".printf(color_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
