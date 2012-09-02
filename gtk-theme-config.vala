@@ -165,7 +165,7 @@ public class Preferences : Dialog {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
-			string text = "@define-color selected_bg_color %s;".printf(color_value);
+			string text = "@define-color selected_bg_color %s;\n@define-color theme_selected_bg_color %s;".printf(color_value, color_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
