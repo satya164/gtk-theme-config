@@ -2,7 +2,6 @@ using Gtk;
 
 public class Preferences : Dialog {
 
-	private File gtk2_config_file;
 	private File gtk3_config_file;
 
 	private ColorButton color_button;
@@ -24,12 +23,12 @@ public class Preferences : Dialog {
 			}
 
 		// Methods
-		set_config();
+		read_config();
 		create_widgets ();
 		connect_signals ();
 	}
 
-	private void set_config () {
+	private void read_config () {
 
 		// Detect the theme name
 		// var settings = new GLib.Settings ("org.gnome.desktop.interface");
@@ -40,28 +39,7 @@ public class Preferences : Dialog {
 		
 		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
 
-		// Create path if doesn't exist
-		if(!gtk3_config_file.get_parent().query_exists()) {
-
-				gtk3_config_file.get_parent().get_path();
-				
-				try {
-					gtk3_config_file.get_parent().make_directory(null);
-				} catch (Error e) {
-					stderr.printf ("%s", e.message);
-				}
-			}
-	}
-
-	private void set_defaults () {
-
-		// Set default config
-		color_value = "#398ee7";
-	}
-
-	private void read_config () {
-
-		// Read the config file
+		// Read the config file and create path if doesn't exist
 		if (gtk3_config_file.query_exists ()) {
 			try {
 				var dis = new DataInputStream (gtk3_config_file.read ());
@@ -76,7 +54,20 @@ public class Preferences : Dialog {
 			}
 		} else {
 			set_defaults();
+			gtk3_config_file.get_parent().get_path();
+				
+			try {
+				gtk3_config_file.get_parent().make_directory(null);
+			} catch (Error e) {
+				stderr.printf ("%s", e.message);
+			}
 		}
+	}
+
+	private void set_defaults () {
+
+		// Set default config
+		color_value = "#398ee7";
 	}
 
 	private void create_widgets () {
