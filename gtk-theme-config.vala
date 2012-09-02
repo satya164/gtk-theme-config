@@ -34,12 +34,24 @@ public class Preferences : Dialog {
 		// var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		// var gtk_theme = settings.get_string ("gtk-theme");
 
+		// Set a default color value
+		color_value = "#398ee7";
+
 		// Set the path of config file
 		var gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
 		
 		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
 
-		// Read the config file and create path if doesn't exist
+		// Create path if doesn't exist
+		if (!gtk3_config_file.get_parent().query_exists ()) {
+			try {
+				gtk3_config_file.get_parent().make_directory(null);
+			} catch (Error e) {
+				stderr.printf ("%s\n", e.message);
+			}
+		}
+
+		// Read the config file
 		if (gtk3_config_file.query_exists ()) {
 			try {
 				var dis = new DataInputStream (gtk3_config_file.read ());
@@ -50,33 +62,9 @@ public class Preferences : Dialog {
 					}
 				}
 			} catch (Error e) {
-				stderr.printf ("%s", e.message);
-			}
-		} else {
-			set_defaults();
-			gtk3_config_file.get_parent().get_path();
-				
-			try {
-				gtk3_config_file.get_parent().make_directory(null);
-			} catch (Error e) {
-				stderr.printf ("%s", e.message);
+				stderr.printf ("%s\n", e.message);
 			}
 		}
-	}
-
-	private void set_defaults () {
-
-		// Delete the config file
-		if (gtk3_config_file.query_exists ()) {
-			try {
-				gtk3_config_file.delete ();
-			} catch (Error e) {
-				stderr.printf ("%s", e.message);
-			}
-		}
-
-		// Set default config
-		color_value = "#398ee7";
 	}
 
 	private void create_widgets () {
@@ -89,9 +77,6 @@ public class Preferences : Dialog {
 		var tip = new Label (null);
 		tip.set_markup ("<b>Tip:</b> Changes will not take effect until you restart the running applications.");
 		tip.set_line_wrap (true);
-
-		// Read config file and set values
-		read_config();
 
 		var color = Gdk.RGBA ();
 		color.parse ("%s".printf(color_value.to_string()));
@@ -127,11 +112,12 @@ public class Preferences : Dialog {
 
 	private void on_response (Dialog source, int response_id) {
 		switch (response_id) {
-		case ResponseType.ACCEPT:
-			set_defaults();
-			break;
 		case ResponseType.APPLY:
+			on_set_defaults ();
 			on_set_clicked ();
+			break;
+		case ResponseType.ACCEPT:
+			on_set_defaults ();
 			break;
 		case ResponseType.CLOSE:
 			destroy ();
@@ -149,14 +135,17 @@ public class Preferences : Dialog {
 		this.apply_button.sensitive = false;
 	}
 
-	private void write_config () {
+	private void on_set_defaults () {
 		if (gtk3_config_file.query_exists ()) {
 			try {
 				gtk3_config_file.delete ();
 			} catch (Error e) {
-				stderr.printf ("%s", e.message);
+				stderr.printf ("%s\n", e.message);
 			}
 		}
+	}
+
+	private void write_config () {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
@@ -167,7 +156,7 @@ public class Preferences : Dialog {
 				written += dos.write (data[written:data.length]);
 			}
 		} catch (Error e) {
-			stderr.printf ("%s", e.message);
+			stderr.printf ("%s\n", e.message);
 		}
 	}
 }
