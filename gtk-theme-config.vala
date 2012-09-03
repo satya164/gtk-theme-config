@@ -2,8 +2,6 @@ using Gtk;
 
 public class Preferences : Dialog {
 
-	private File gtk3_config_file;
-
 	private ColorButton color_button;
 	private Widget apply_button;
 
@@ -30,41 +28,10 @@ public class Preferences : Dialog {
 
 	private void read_config () {
 
-		// Detect the theme name
-		// var settings = new GLib.Settings ("org.gnome.desktop.interface");
-		// var gtk_theme = settings.get_string ("gtk-theme");
-
-		// Set default values
-		color_value = "#398ee7";
-
-		// Set the path of config file
-		var gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
-
-		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
-
-		// Create path if doesn't exist
-		if (!gtk3_config_file.get_parent().query_exists ()) {
-			try {
-				gtk3_config_file.get_parent().make_directory_with_parents(null);
-			} catch (Error e) {
-				stderr.printf ("Could not create parent directory: %s\n", e.message);
-			}
-		}
-
-		// Read the config file
-		if (gtk3_config_file.query_exists ()) {
-			try {
-				var dis = new DataInputStream (gtk3_config_file.read ());
-				string line;
-				while ((line = dis.read_line (null)) != null) {
-					if ("@define-color selected_bg_color" in line) {
-						color_value = line.substring (32, line.length-33);
-					}
-				}
-			} catch (Error e) {
-				stderr.printf ("Could not read configuration: %s\n", e.message);
-			}
-		}
+		// Read the current value
+		var settings = new GLib.Settings ("org.gnome.desktop.interface");
+		var color_scheme = settings.get_string ("gtk-color-scheme");
+		color_value = color_scheme.substring (18, color_scheme.length-19);
 	}
 
 	private void create_widgets () {
@@ -141,39 +108,22 @@ public class Preferences : Dialog {
 	}
 
 	private void on_set_defaults () {
-		if (gtk3_config_file.query_exists ()) {
-			try {
-				gtk3_config_file.delete ();
-			} catch (Error e) {
-				stderr.printf ("Could not reset to defaults: %s\n", e.message);
-			}
-		}
-
 		try {
+			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
+			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
 			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
 		} catch (Error e) {
-			stderr.printf ("Could not reset xsettings value: %s\n", e.message);
+			stderr.printf ("Could not reset configuration: %s\n", e.message);
 		}
 	}
 
 	private void write_config () {
 		try {
-			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
-			dos.put_string ("/* theme preferences */\n");
-			string text = "@define-color selected_bg_color %s;\n".printf (color_value);
-			uint8[] data = text.data;
-			long written = 0;
-			while (written < data.length) {
-				written += dos.write (data[written:data.length]);
-			}
+			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme \"selected_bg_color:%s;\"".printf (color_value));
+			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string \"selected_bg_color:%s;\"".printf (color_value));
+			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s \"selected_bg_color:%s;\"".printf (color_value));
 		} catch (Error e) {
-			stderr.printf ("Could not write configuration: %s\n", e.message);
-		}
-
-		try {
-			Process.spawn_command_line_sync ("xfconf-query --create --type string -c xsettings -p /Gtk/ColorScheme -s \"selected_bg_color:%s;\"".printf (color_value));
-		} catch (Error e) {
-			stderr.printf ("Could not set xsettings value: %s\n", e.message);
+			stderr.printf ("Could not set configuration: %s\n", e.message);
 		}
 	}
 }
