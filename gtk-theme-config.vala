@@ -13,7 +13,7 @@ public class Preferences : Dialog {
 
 		this.title = "GTK theme preferences";
 		this.border_width = 10;
-		set_default_size (250, 300);
+		set_default_size (250, 250);
 
 		// Set window icon
 		try {
@@ -70,12 +70,12 @@ public class Preferences : Dialog {
 	private void create_widgets () {
 
 		// Create and setup widgets
-		var description = new Label ("Change GTK theme color");
+		var description = new Label.with_mnemonic ("_Change GTK theme color");
 
-		var color_label = new Label ("Selected color:");
+		var color_label = new Label.with_mnemonic ("_Selected color:");
 
-		var tip = new Label (null);
-		tip.set_markup ("<b>Tip:</b> Changes will not take effect until you restart the running applications.");
+		var tip = new Label.with_mnemonic ("_<b>Tip:</b> Changes will not take effect until you restart the running applications.");
+		tip.set_use_markup (true);
 		tip.set_line_wrap (true);
 
 		var color = Gdk.RGBA ();
@@ -84,7 +84,7 @@ public class Preferences : Dialog {
 		this.color_button = new ColorButton.with_rgba (color);
 
 		// Layout widgets
-		var hbox = new Box (Orientation.HORIZONTAL, 10);
+		var hbox = new Box (Orientation.HORIZONTAL, 0);
 		hbox.pack_start (color_label, true, true, 0);
 		hbox.pack_start (color_button, true, true, 0);
 		var content = get_content_area () as Box;
@@ -96,7 +96,7 @@ public class Preferences : Dialog {
 		// Add buttons to button area at the bottom
 		this.apply_button = add_button (Stock.APPLY, ResponseType.APPLY);
 		this.apply_button.sensitive = false;
-		add_button ("Reset to defaults", ResponseType.ACCEPT);
+		add_button ("_Reset to defaults", ResponseType.ACCEPT);
 		add_button (Stock.CLOSE, ResponseType.CLOSE);
 
 		show_all ();
