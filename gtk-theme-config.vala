@@ -10,37 +10,34 @@ public class Preferences : Dialog {
 	public Preferences () {
 
 		this.title = "GTK theme preferences";
+		this.window_position = WindowPosition.CENTER;
 		this.border_width = 10;
 		set_default_size (250, 250);
 
 		// Set window icon
 		try {
 			this.icon = IconTheme.get_default ().load_icon ("preferences-desktop-wallpaper", 48, 0);
-			} catch (Error e) {
-				stderr.printf ("Could not load application icon: %s\n", e.message);
-			}
+		} catch (Error e) {
+			stderr.printf ("Could not load application icon: %s\n", e.message);
+		}
 
 		// Methods
-		read_config ();
 		create_widgets ();
 		connect_signals ();
 	}
 
-	private void read_config () {
+	private void create_widgets () {
 
 		// Read the current value
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		var color_scheme = settings.get_string ("gtk-color-scheme");
 		color_value = color_scheme.substring (18, color_scheme.length-19);
-	}
-
-	private void create_widgets () {
-
-		// Create and setup widgets
-		var color_label = new Label.with_mnemonic ("_Selected color:");
 
 		var color = Gdk.RGBA ();
 		color.parse ("%s".printf (color_value.to_string()));
+
+		// Create and setup widgets
+		var color_label = new Label.with_mnemonic ("_Selected color:");
 
 		this.color_button = new ColorButton.with_rgba (color);
 
@@ -72,7 +69,6 @@ public class Preferences : Dialog {
 	private void on_response (Dialog source, int response_id) {
 		switch (response_id) {
 		case ResponseType.APPLY:
-			on_set_defaults ();
 			on_set_clicked ();
 			break;
 		case ResponseType.ACCEPT:
@@ -82,6 +78,17 @@ public class Preferences : Dialog {
 			destroy ();
 			break;
 		}
+	}
+
+	private void on_set_defaults () {
+		reset_defaults ();
+		this.apply_button.sensitive = false;
+	}
+
+	private void on_set_clicked () {
+		reset_defaults ();
+		write_config ();
+		this.apply_button.sensitive = false;
 	}
 
 	private void on_color_set () {
@@ -94,12 +101,7 @@ public class Preferences : Dialog {
 		color_value = "#%02x%02x%02x".printf (r, g, b);
 	}
 
-	private void on_set_clicked () {
-		write_config ();
-		this.apply_button.sensitive = false;
-	}
-
-	private void on_set_defaults () {
+	private void reset_defaults () {
 		try {
 			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
 			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
@@ -110,10 +112,12 @@ public class Preferences : Dialog {
 	}
 
 	private void write_config () {
+		string color_scheme = "\"selected_bg_color:%s;\"".printf (color_value);
+
 		try {
-			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme \"selected_bg_color:%s;\"".printf (color_value));
-			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string \"selected_bg_color:%s;\"".printf (color_value));
-			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s \"selected_bg_color:%s;\"".printf (color_value));
+			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
+			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
+			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
 		} catch (Error e) {
 			stderr.printf ("Could not set configuration: %s\n", e.message);
 		}
