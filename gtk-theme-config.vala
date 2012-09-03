@@ -23,7 +23,7 @@ public class Preferences : Dialog {
 			}
 
 		// Methods
-		read_config();
+		read_config ();
 		create_widgets ();
 		connect_signals ();
 	}
@@ -79,7 +79,7 @@ public class Preferences : Dialog {
 		tip.set_line_wrap (true);
 
 		var color = Gdk.RGBA ();
-		color.parse ("%s".printf(color_value.to_string()));
+		color.parse ("%s".printf (color_value.to_string()));
 
 		this.color_button = new ColorButton.with_rgba (color);
 
@@ -96,7 +96,7 @@ public class Preferences : Dialog {
 		// Add buttons to button area at the bottom
 		this.apply_button = add_button (Stock.APPLY, ResponseType.APPLY);
 		this.apply_button.sensitive = false;
-		add_button ("_Reset to defaults", ResponseType.ACCEPT);
+		add_button ("Reset to defaults", ResponseType.ACCEPT);
 		add_button (Stock.CLOSE, ResponseType.CLOSE);
 
 		show_all ();
@@ -104,7 +104,7 @@ public class Preferences : Dialog {
 
 	private void connect_signals () {
 		color_button.color_set.connect (() => {
-			on_color_set();
+			on_color_set ();
 			this.apply_button.sensitive = true;
 		});
 		this.response.connect (on_response);
@@ -127,7 +127,12 @@ public class Preferences : Dialog {
 
 	private void on_color_set () {
 		var color =  this.color_button.get_rgba ();
-		color_value = "%s".printf(color.to_string());
+
+		int r = (int)Math.round (color.red * 255);
+		int g = (int)Math.round (color.green * 255);
+		int b = (int)Math.round (color.blue * 255);
+
+		color_value = "#%02x%02x%02x".printf (r, g, b);
 	}
 
 	private void on_set_clicked () {
@@ -143,13 +148,19 @@ public class Preferences : Dialog {
 				stderr.printf ("Could not reset to defaults: %s\n", e.message);
 			}
 		}
+
+		try {
+			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
+		} catch (Error e) {
+			stderr.printf ("Could not reset xsettings value: %s\n", e.message);
+		}
 	}
 
 	private void write_config () {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* theme preferences */\n");
-			string text = "@define-color selected_bg_color %s;\n".printf(color_value);
+			string text = "@define-color selected_bg_color %s;\n".printf (color_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
@@ -157,6 +168,12 @@ public class Preferences : Dialog {
 			}
 		} catch (Error e) {
 			stderr.printf ("Could not write configuration: %s\n", e.message);
+		}
+
+		try {
+			Process.spawn_command_line_sync ("xfconf-query --create --type string -c xsettings -p /Gtk/ColorScheme -s \"selected_bg_color:%s;\"".printf (color_value));
+		} catch (Error e) {
+			stderr.printf ("Could not set xsettings value: %s\n", e.message);
 		}
 	}
 }
