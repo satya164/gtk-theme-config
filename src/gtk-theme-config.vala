@@ -44,6 +44,8 @@ class ThemePrefWindow : ApplicationWindow {
 	private File gtk3_saved_file;
 	private File gtk2_saved_file;
 
+	private File file_to_read;
+
 	private string color_value;
 	private string panelbg_value;
 	private string panelfg_value;
@@ -107,8 +109,14 @@ class ThemePrefWindow : ApplicationWindow {
 
 		// Read the config file
 		if (gtk3_config_file.query_exists ()) {
+			file_to_read = gtk3_config_file;
+		} else if (gtk3_saved_file.query_exists ()) {
+			file_to_read = gtk3_saved_file;
+		}
+
+		if (file_to_read.query_exists ()) {
 			try {
-				var dis = new DataInputStream (gtk3_config_file.read ());
+				var dis = new DataInputStream (file_to_read.read ());
 				string line;
 				while ((line = dis.read_line (null)) != null) {
 					if ("@define-color panel_bg_color" in line) {
