@@ -35,6 +35,15 @@ class ThemePrefWindow : ApplicationWindow {
 	private Gdk.RGBA menubg;
 	private Gdk.RGBA menufg;
 
+	private File gtk3_path;
+	private File gtk2_path;
+
+	private File gtk3_config_file;
+	private File gtk2_config_file;
+
+	private File gtk3_saved_file;
+	private File gtk2_saved_file;
+
 	private string color_value;
 	private string panelbg_value;
 	private string panelfg_value;
@@ -73,6 +82,51 @@ class ThemePrefWindow : ApplicationWindow {
 
 		color = Gdk.RGBA ();
 		color.parse ("%s".printf (color_value.to_string()));
+
+		// Set the path of gtk3 config file
+		gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
+
+		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
+		gtk3_saved_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css.saved");		
+
+		// Set the path of gtk2 config file
+		gtk2_path = File.new_for_path (Environment.get_home_dir ());
+
+		gtk2_config_file = gtk2_path.get_child (".gtkrc-2.0");
+		gtk2_saved_file = gtk2_path.get_child (".gtkrc-2.0.saved");
+
+		// Create path if doesn't exist
+		if (!gtk3_config_file.get_parent().query_exists ()) {
+			try {
+				gtk3_config_file.get_parent().make_directory_with_parents(null);
+			} catch (Error e) {
+				stderr.printf ("Could not create parent directory: %s\n", e.message);
+			}
+		}
+
+		// Read the config file
+		if (gtk3_config_file.query_exists ()) {
+			try {
+				var dis = new DataInputStream (gtk3_config_file.read ());
+				string line;
+				while ((line = dis.read_line (null)) != null) {
+					if ("@define-color panel_bg_color" in line) {
+						panelbg_value = line.substring (29, line.length-30);
+					}
+					if ("@define-color panel_fg_color" in line) {
+						panelfg_value = line.substring (29, line.length-30);
+					}
+					if ("@define-color menu_bg_color" in line) {
+						menubg_value = line.substring (28, line.length-29);
+					}
+					if ("@define-color menu_fg_color" in line) {
+						menufg_value = line.substring (28, line.length-29);
+					}
+				}
+			} catch (Error e) {
+				stderr.printf ("Could not read configuration: %s\n", e.message);
+			}
+		}
 	}
 
 	private void create_widgets () {
@@ -80,6 +134,10 @@ class ThemePrefWindow : ApplicationWindow {
 		// Create and setup widgets
 		this.custom_switch = new Switch ();
 		this.custom_switch.set_halign (Gtk.Align.END);
+
+		if (gtk3_config_file.query_exists ()) {
+			this.custom_switch.set_active (true);
+		}
 
 		this.separator1 = new Separator (Gtk.Orientation.HORIZONTAL);
 		this.separator2 = new Separator (Gtk.Orientation.HORIZONTAL);
@@ -149,6 +207,13 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	private void connect_signals () {
+		custom_switch.notify["active"].connect (() => {
+			if ((custom_switch as Switch).get_active()) {
+				restore_config ();
+			} else {
+				save_config ();
+			}
+		});
 		color_button.color_set.connect (() => {
 			on_selected_color_set ();
 			this.apply_button.sensitive = true;
@@ -234,6 +299,33 @@ class ThemePrefWindow : ApplicationWindow {
 		menufg_value = "#%02x%02x%02x".printf (r, g, b);
 	}
 
+	private void restore_config () {
+		try {
+			if (gtk3_saved_file.query_exists ()) {
+				gtk3_saved_file.set_display_name ("gtk.css");
+			}
+			if (gtk2_saved_file.query_exists ()) {
+				gtk2_saved_file.set_display_name (".gtkrc-2.0");
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not restore configuration: %s\n", e.message);
+		}
+	}
+			
+	private void save_config () {
+		try {
+			if (gtk3_config_file.query_exists ()) {
+				gtk3_config_file.set_display_name ("gtk.css.saved");
+			}
+			if (gtk2_config_file.query_exists ()) {
+				gtk2_config_file.set_display_name (".gtkrc-2.0.saved");
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not save configuration: %s\n", e.message);
+		}
+	}
+
+
 	private void reset_defaults () {
 		try {
 			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
@@ -241,6 +333,22 @@ class ThemePrefWindow : ApplicationWindow {
 			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
 		} catch (Error e) {
 			stderr.printf ("Could not reset configuration: %s\n", e.message);
+		}
+
+		if (gtk3_config_file.query_exists ()) {
+			try {
+				gtk3_config_file.delete ();
+			} catch (Error e) {
+				stderr.printf ("Could not reset gtk3 configuration: %s\n", e.message);
+			}
+		}
+
+		if (gtk2_config_file.query_exists ()) {
+			try {
+				gtk2_config_file.delete ();
+			} catch (Error e) {
+				stderr.printf ("Could not reset gtk2 configuration: %s\n", e.message);
+			}
 		}
 	}
 
@@ -265,7 +373,7 @@ class ThemePrefApp : Gtk.Application {
 	}
 
 	internal ThemePrefApp () {
-		Object (application_id: "org.example.checkbutton");
+		Object (application_id: "org.themepref.app");
 	}
 }
 
