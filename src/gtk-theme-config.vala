@@ -54,6 +54,7 @@ class ThemePrefWindow : ApplicationWindow {
 		Object (application: app, title: "GTK theme preferences");
 
 		this.window_position = WindowPosition.CENTER;
+		this.resizable = false;
 		this.border_width = 10;
 
 		// Set window icon
