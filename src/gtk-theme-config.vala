@@ -113,15 +113,23 @@ class ThemePrefWindow : ApplicationWindow {
 				while ((line = dis.read_line (null)) != null) {
 					if ("@define-color panel_bg_color" in line) {
 						panelbg_value = line.substring (29, line.length-30);
+						panelbg = Gdk.RGBA ();
+						panelbg.parse ("%s".printf (panelbg_value.to_string()));
 					}
 					if ("@define-color panel_fg_color" in line) {
 						panelfg_value = line.substring (29, line.length-30);
+						panelfg = Gdk.RGBA ();
+						panelfg.parse ("%s".printf (panelfg_value.to_string()));
 					}
 					if ("@define-color menu_bg_color" in line) {
 						menubg_value = line.substring (28, line.length-29);
+						menubg = Gdk.RGBA ();
+						menubg.parse ("%s".printf (menubg_value.to_string()));
 					}
 					if ("@define-color menu_fg_color" in line) {
 						menufg_value = line.substring (28, line.length-29);
+						menufg = Gdk.RGBA ();
+						menufg.parse ("%s".printf (menufg_value.to_string()));
 					}
 				}
 			} catch (Error e) {
@@ -237,6 +245,7 @@ class ThemePrefWindow : ApplicationWindow {
 		});
 		apply_button.clicked.connect (() => {
 			reset_defaults ();
+			set_color_scheme ();
 			write_config ();
 			this.apply_button.sensitive = false;
 			this.reset_button.sensitive = true;
@@ -354,7 +363,7 @@ class ThemePrefWindow : ApplicationWindow {
 		}
 	}
 
-	private void write_config () {
+	private void set_color_scheme () {
 		string color_scheme = "\"selected_bg_color:%s;\"".printf (color_value);
 
 		try {
@@ -363,6 +372,33 @@ class ThemePrefWindow : ApplicationWindow {
 			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
 		} catch (Error e) {
 			stderr.printf ("Could not set configuration: %s\n", e.message);
+		}
+	}
+
+	private void write_config () {
+		try {
+			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
+			dos.put_string ("/* GTK theme preferences */\n");
+			string text = "@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\n".printf(panelbg_value, panelfg_value, menubg_value, menufg_value);
+			uint8[] data = text.data;
+			long written = 0;
+			while (written < data.length) {
+				written += dos.write (data[written:data.length]);
+			}
+		} catch (Error e) {
+			stderr.printf ("%s", e.message);
+		}
+		try {
+			var dos = new DataOutputStream (gtk2_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
+			dos.put_string ("# GTK theme preferences\n");
+			string text = "gtk_color_scheme = \"panel_bg_color:%s\\npanel_fg_color:%s\\nmenu_bg_color:%s\\nmenu_fg_color:%s\"".printf(panelbg_value, panelfg_value, menubg_value, menufg_value);
+			uint8[] data = text.data;
+			long written = 0;
+			while (written < data.length) {
+				written += dos.write (data[written:data.length]);
+			}
+		} catch (Error e) {
+			stderr.printf ("%s", e.message);
 		}
 	}
 }
