@@ -77,14 +77,12 @@ class ThemePrefWindow : ApplicationWindow {
 		// Read the current value
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		var color_scheme = settings.get_string ("gtk-color-scheme");
-		color_value = color_scheme.substring (18, color_scheme.length-19);
 
-		if (color_value == null) {
+		if ("#" in color_scheme) {
+			color_value = color_scheme.substring (18, color_scheme.length-19);
+		} else {
 			color_value = "#398ee7";
 		}
-
-		color = Gdk.RGBA ();
-		color.parse ("%s".printf (color_value.to_string()));
 
 		// Set the path of gtk3 config file
 		gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
@@ -121,29 +119,38 @@ class ThemePrefWindow : ApplicationWindow {
 				while ((line = dis.read_line (null)) != null) {
 					if ("@define-color panel_bg_color" in line) {
 						panelbg_value = line.substring (29, line.length-30);
-						panelbg = Gdk.RGBA ();
-						panelbg.parse ("%s".printf (panelbg_value.to_string()));
 					}
 					if ("@define-color panel_fg_color" in line) {
 						panelfg_value = line.substring (29, line.length-30);
-						panelfg = Gdk.RGBA ();
-						panelfg.parse ("%s".printf (panelfg_value.to_string()));
 					}
 					if ("@define-color menu_bg_color" in line) {
 						menubg_value = line.substring (28, line.length-29);
-						menubg = Gdk.RGBA ();
-						menubg.parse ("%s".printf (menubg_value.to_string()));
 					}
 					if ("@define-color menu_fg_color" in line) {
 						menufg_value = line.substring (28, line.length-29);
-						menufg = Gdk.RGBA ();
-						menufg.parse ("%s".printf (menufg_value.to_string()));
 					}
 				}
 			} catch (Error e) {
 				stderr.printf ("Could not read configuration: %s\n", e.message);
 			}
+		} else {
+			panelbg_value = "#cccccc";
+			panelfg_value = "#333333";
+			menubg_value = "#eeeeee";
+			menufg_value = "#333333";
 		}
+
+		// Parse colors
+		color = Gdk.RGBA ();
+		color.parse ("%s".printf (color_value.to_string()));
+		panelbg = Gdk.RGBA ();
+		panelbg.parse ("%s".printf (panelbg_value.to_string()));
+		panelfg = Gdk.RGBA ();
+		panelfg.parse ("%s".printf (panelfg_value.to_string()));
+		menubg = Gdk.RGBA ();
+		menubg.parse ("%s".printf (menubg_value.to_string()));
+		menufg = Gdk.RGBA ();
+		menufg.parse ("%s".printf (menufg_value.to_string()));
 	}
 
 	private void create_widgets () {
