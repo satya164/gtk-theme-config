@@ -3,8 +3,9 @@ CFLAGS=--pkg gtk+-3.0
 
 all: gtk-theme-config
 
-gtk-theme-config: gtk-theme-config.vala
-	$(CC) $(CFLAGS) gtk-theme-config.vala -o gtk-theme-config
+gtk-theme-config: src/gtk-theme-config.vala
+	mkdir build
+	$(CC) $(CFLAGS) src/gtk-theme-config.vala -o build/gtk-theme-config
 
 clean:
-	rm -f gtk-theme-config
+	rm -rf build
