@@ -67,6 +67,10 @@ class ThemePrefWindow : ApplicationWindow {
 		var color_scheme = settings.get_string ("gtk-color-scheme");
 		color_value = color_scheme.substring (18, color_scheme.length-19);
 
+		if (color_value == null) {
+			color_value = "#398ee7";
+		}
+
 		color = Gdk.RGBA ();
 		color.parse ("%s".printf (color_value.to_string()));
 	}
