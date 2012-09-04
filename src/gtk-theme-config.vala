@@ -110,7 +110,7 @@ class ThemePrefWindow : ApplicationWindow {
 		// Read the config file
 		if (gtk3_config_file.query_exists ()) {
 			file_to_read = gtk3_config_file;
-		} else if (gtk3_saved_file.query_exists ()) {
+		} else {
 			file_to_read = gtk3_saved_file;
 		}
 
@@ -165,7 +165,7 @@ class ThemePrefWindow : ApplicationWindow {
 		this.heading2 = new Label.with_mnemonic ("_<b>Widgets</b>");
 		this.heading2.set_use_markup (true);
 		this.heading2.set_halign (Gtk.Align.START);
-		this.tip = new Label.with_mnemonic ("_<b>Tip:</b> You need to restart running apps to apply changes.");
+		this.tip = new Label.with_mnemonic ("_<b>Tip:</b> You need to logout and login back to apply changes.");
 		this.tip.set_use_markup (true);
 		this.tip.set_halign (Gtk.Align.START);
 
@@ -387,7 +387,7 @@ class ThemePrefWindow : ApplicationWindow {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
-			string text = "@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\n".printf(panelbg_value, panelfg_value, menubg_value, menufg_value);
+			string text = "@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\n\nGtkTreeMenu.menu,GtkMenuToolButton.menu,GtkComboBox .menu,.primary-toolbar .button .menu,.toolbar .menu,.toolbar .primary-toolbar .menu,.menu{background-color:@menu_bg_color;color:@menu_fg_color;box-shadow:none;}\nGtkTreeMenu .menuitem *,GtkMenuToolButton .menuitem *,GtkComboBox .menuitem *,GtkTreeMenu.menu .menuitem,GtkMenuToolButton.menu .menuitem,GtkComboBox .menu .menuitem,.primary-toolbar .button .menu .menuitem,.toolbar .menu .menuitem,.toolbar .primary-toolbar .menu .menuitem,.menu .menuitem{color:@menu_fg_color;}\nGtkTreeMenu .menuitem *:insensitive,GtkMenuToolButton .menuitem *:insensitive,GtkComboBox .menuitem *:insensitive,.menu .menuitem *:insensitive,GtkTreeMenu.menu .menuitem:insensitive,GtkMenuToolButton.menu .menuitem:insensitive,GtkComboBox .menu .menuitem:insensitive,.primary-toolbar .button .menu .menuitem:insensitive,.toolbar .menu .menuitem:insensitive,.toolbar .primary-toolbar .menu .menuitem:insensitive,.menu .menuitem:insensitive{color:mix(@menu_fg_color,@menu_bg_color,0.4);text-shadow:none;}\n.menuitem .accelerator{color:alpha(@menu_fg_color,0.6);}\n.menuitem .accelerator:insensitive{color:alpha(mix(@menu_fg_color,@menu_bg_color,0.5),0.6);text-shadow:none;}\n.menuitem.separator{color:shade(@menu_bg_color,0.9);border-color:shade(@menu_bg_color,0.9);}\n\nPanelWidget,PanelApplet,PanelToplevel,PanelSeparator,.gnome-panel-menu-bar,PanelApplet > GtkMenuBar.menubar,PanelApplet > GtkMenuBar.menubar.menuitem,PanelMenuBar.menubar,PanelMenuBar.menubar.menuitem,PanelAppletFrame,UnityPanelWidget,.unity-panel,.unity-panel.menubar,.unity-panel .menubar{background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to (shade(@panel_bg_color,0.9)));border-color:shade(@panel_bg_color,0.8);color:@panel_fg_color;}\nPanelApplet .button:prelight,.unity-panel.menubar.menuitem:hover,.unity-panel.menubar .menuitem *:hover{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,1.5)),to (shade(@panel_bg_color,1.2)));border-color:shade(@panel_bg_color,0.85);color:@panel_fg_color;}\nPanelApplet .button{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,1.3)),to (shade(@panel_bg_color,1.0)));border-color:shade(@panel_bg_color,0.7);color:@panel_fg_color;text-shadow:none;}\nPanelApplet .button:prelight:active,PanelApplet .button:active{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,0.85)),to (shade(@panel_bg_color,1.0)));border-color:shade(@panel_bg_color,0.7);}".printf(panelbg_value, panelfg_value, menubg_value, menufg_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
