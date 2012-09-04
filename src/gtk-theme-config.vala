@@ -386,7 +386,7 @@ class ThemePrefWindow : ApplicationWindow {
 			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
 			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
 		} catch (Error e) {
-			stderr.printf ("Could not set configuration: %s\n", e.message);
+			stderr.printf ("Could not set color scheme: %s\n", e.message);
 		}
 	}
 
@@ -401,7 +401,7 @@ class ThemePrefWindow : ApplicationWindow {
 				written += dos.write (data[written:data.length]);
 			}
 		} catch (Error e) {
-			stderr.printf ("%s", e.message);
+			stderr.printf ("Could not write configuration: %s\n", e.message);
 		}
 		try {
 			var dos = new DataOutputStream (gtk2_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
@@ -413,7 +413,7 @@ class ThemePrefWindow : ApplicationWindow {
 				written += dos.write (data[written:data.length]);
 			}
 		} catch (Error e) {
-			stderr.printf ("%s", e.message);
+			stderr.printf ("Could not write configuration: %s\n", e.message);
 		}
 	}
 }
