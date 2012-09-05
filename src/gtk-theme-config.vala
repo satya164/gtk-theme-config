@@ -357,8 +357,10 @@ class ThemePrefWindow : ApplicationWindow {
 		if (selected_color_changed == "true") {
 			set_color_scheme ();
 		}
-		reset_config ();
-		write_config ();
+		if ((custom_switch as Switch).get_active()) {
+			reset_config ();
+			write_config ();
+		}
 	}
 
 	private void set_color_scheme () {
