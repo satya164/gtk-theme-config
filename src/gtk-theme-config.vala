@@ -64,7 +64,7 @@ class ThemePrefWindow : ApplicationWindow {
 
 		// Set window icon
 		try {
-			this.icon = IconTheme.get_default ().load_icon ("preferences-desktop-wallpaper", 48, 0);
+			this.icon = IconTheme.get_default ().load_icon ("preferences-desktop-theme", 48, 0);
 		} catch (Error e) {
 			stderr.printf ("Could not load application icon: %s\n", e.message);
 		}
