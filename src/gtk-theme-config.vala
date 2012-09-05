@@ -35,6 +35,8 @@ class ThemePrefWindow : ApplicationWindow {
 	private Gdk.RGBA menubg;
 	private Gdk.RGBA menufg;
 
+	private Gdk.RGBA color_rgb;
+
 	private File config_dir;
 	private File home_dir;
 
@@ -44,8 +46,10 @@ class ThemePrefWindow : ApplicationWindow {
 	private File gtk3_saved_file;
 	private File gtk2_saved_file;
 
-	private File file_to_read;
+	private File config_path;
 	private File theme_path;
+
+	private string color_hex;
 
 	private string color_value;
 	private string panelbg_value;
@@ -134,14 +138,14 @@ class ThemePrefWindow : ApplicationWindow {
 
 		// Read the config file
 		if (gtk3_config_file.query_exists ()) {
-			file_to_read = gtk3_config_file;
+			config_path = gtk3_config_file;
 		} else {
-			file_to_read = gtk3_saved_file;
+			config_path = gtk3_saved_file;
 		}
 
-		if (file_to_read.query_exists ()) {
+		if (config_path.query_exists ()) {
 			try {
-				var dis = new DataInputStream (file_to_read.read ());
+				var dis = new DataInputStream (config_path.read ());
 				string line;
 				while ((line = dis.read_line (null)) != null) {
 					if ("@define-color panel_bg_color" in line) {
@@ -302,55 +306,43 @@ class ThemePrefWindow : ApplicationWindow {
 		});
 	}
 
+	private void rgb_to_hex () {
+		int r = (int)Math.round (color_rgb.red * 255);
+		int g = (int)Math.round (color_rgb.green * 255);
+		int b = (int)Math.round (color_rgb.blue * 255);
+
+		color_hex = "#%02x%02x%02x".printf (r, g, b);
+	}
+
 	private void on_selected_color_set () {
-		var color =  this.color_button.get_rgba ();
-
-		int r = (int)Math.round (color.red * 255);
-		int g = (int)Math.round (color.green * 255);
-		int b = (int)Math.round (color.blue * 255);
-
-		color_value = "#%02x%02x%02x".printf (r, g, b);
+		color_rgb =  this.color_button.get_rgba ();
+		rgb_to_hex ();
+		color_value = color_hex;
 		selected_color_changed = "true";
 	}
 
 	private void on_panelbg_color_set () {
-		var color =  this.panelbg_button.get_rgba ();
-
-		int r = (int)Math.round (color.red * 255);
-		int g = (int)Math.round (color.green * 255);
-		int b = (int)Math.round (color.blue * 255);
-
-		panelbg_value = "#%02x%02x%02x".printf (r, g, b);
+		color_rgb =  this.panelbg_button.get_rgba ();
+		rgb_to_hex ();
+		panelbg_value = color_hex;
 	}
 
 	private void on_panelfg_color_set () {
-		var color =  this.panelfg_button.get_rgba ();
-
-		int r = (int)Math.round (color.red * 255);
-		int g = (int)Math.round (color.green * 255);
-		int b = (int)Math.round (color.blue * 255);
-
-		panelfg_value = "#%02x%02x%02x".printf (r, g, b);
+		color_rgb =  this.panelfg_button.get_rgba ();
+		rgb_to_hex ();
+		panelfg_value = color_hex;
 	}
 
 	private void on_menubg_color_set () {
-		var color =  this.menubg_button.get_rgba ();
-
-		int r = (int)Math.round (color.red * 255);
-		int g = (int)Math.round (color.green * 255);
-		int b = (int)Math.round (color.blue * 255);
-
-		menubg_value = "#%02x%02x%02x".printf (r, g, b);
+		color_rgb =  this.menubg_button.get_rgba ();
+		rgb_to_hex ();
+		menubg_value = color_hex;
 	}
 
 	private void on_menufg_color_set () {
-		var color =  this.menufg_button.get_rgba ();
-
-		int r = (int)Math.round (color.red * 255);
-		int g = (int)Math.round (color.green * 255);
-		int b = (int)Math.round (color.blue * 255);
-
-		menufg_value = "#%02x%02x%02x".printf (r, g, b);
+		color_rgb =  this.menufg_button.get_rgba ();
+		rgb_to_hex ();
+		menufg_value = color_hex;
 	}
 
 	private void on_settings_applied () {
