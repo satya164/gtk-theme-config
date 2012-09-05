@@ -38,7 +38,6 @@ class ThemePrefWindow : ApplicationWindow {
 	private File config_dir;
 	private File home_dir;
 
-
 	private File gtk3_config_file;
 	private File gtk2_config_file;
 
@@ -53,6 +52,8 @@ class ThemePrefWindow : ApplicationWindow {
 	private string panelfg_value;
 	private string menubg_value;
 	private string menufg_value;
+
+	private string selected_color_changed;
 
 	internal ThemePrefWindow (ThemePrefApp app) {
 		Object (application: app, title: "GTK theme preferences");
@@ -285,14 +286,13 @@ class ThemePrefWindow : ApplicationWindow {
 			this.apply_button.sensitive = true;
 		});
 		apply_button.clicked.connect (() => {
-			reset_defaults ();
-			set_color_scheme ();
-			write_config ();
+			on_settings_applied ();
 			this.apply_button.sensitive = false;
 			this.reset_button.sensitive = true;
 		});
 		reset_button.clicked.connect (() => {
-			reset_defaults ();
+			reset_color_scheme ();
+			reset_config ();
 			this.apply_button.sensitive = false;
 			this.reset_button.sensitive = false;
 			this.custom_switch.set_active (false);
@@ -310,6 +310,7 @@ class ThemePrefWindow : ApplicationWindow {
 		int b = (int)Math.round (color.blue * 255);
 
 		color_value = "#%02x%02x%02x".printf (r, g, b);
+		selected_color_changed = "true";
 	}
 
 	private void on_panelbg_color_set () {
@@ -352,6 +353,36 @@ class ThemePrefWindow : ApplicationWindow {
 		menufg_value = "#%02x%02x%02x".printf (r, g, b);
 	}
 
+	private void on_settings_applied () {
+		if (selected_color_changed == "true") {
+			set_color_scheme ();
+		}
+		reset_config ();
+		write_config ();
+	}
+
+	private void set_color_scheme () {
+		string color_scheme = "\"selected_bg_color:%s;\"".printf (color_value);
+
+		try {
+			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
+			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
+			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
+		} catch (Error e) {
+			stderr.printf ("Could not set color scheme: %s\n", e.message);
+		}
+	}
+
+	private void reset_color_scheme () {
+		try {
+			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
+			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
+			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme: %s\n", e.message);
+		}
+	}
+
 	private void restore_config () {
 		try {
 			if (gtk3_saved_file.query_exists ()) {
@@ -377,17 +408,8 @@ class ThemePrefWindow : ApplicationWindow {
 			stderr.printf ("Could not save configuration: %s\n", e.message);
 		}
 	}
-
-
-	private void reset_defaults () {
-		try {
-			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
-			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
-			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
-		} catch (Error e) {
-			stderr.printf ("Could not reset configuration: %s\n", e.message);
-		}
-
+			
+	private void reset_config () {
 		if (gtk3_config_file.query_exists ()) {
 			try {
 				gtk3_config_file.delete ();
@@ -405,42 +427,30 @@ class ThemePrefWindow : ApplicationWindow {
 		}
 	}
 
-	private void set_color_scheme () {
-		string color_scheme = "\"selected_bg_color:%s;\"".printf (color_value);
-
-		try {
-			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
-			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
-			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
-		} catch (Error e) {
-			stderr.printf ("Could not set color scheme: %s\n", e.message);
-		}
-	}
-
 	private void write_config () {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
-			string text = "@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\nGtkTreeMenu.menu,GtkMenuToolButton.menu,GtkComboBox .menu,.primary-toolbar .button .menu,.toolbar .menu,.toolbar .primary-toolbar .menu,.menu{background-color:@menu_bg_color;color:@menu_fg_color;border-color:shade(@menu_bg_color,0.7);box-shadow:none;-unico-inner-stroke-width:0;}\nGtkTreeMenu .menuitem *,GtkMenuToolButton .menuitem *,GtkComboBox .menuitem *,GtkTreeMenu.menu .menuitem,GtkMenuToolButton.menu .menuitem,GtkComboBox .menu .menuitem,.primary-toolbar .button .menu .menuitem,.toolbar .menu .menuitem,.toolbar .primary-toolbar .menu .menuitem,.menu .menuitem{color:@menu_fg_color;text-shadow:none;}\nGtkTreeMenu .menuitem *:insensitive,GtkMenuToolButton .menuitem *:insensitive,GtkComboBox .menuitem *:insensitive,.menu .menuitem *:insensitive,GtkTreeMenu.menu .menuitem:insensitive,GtkMenuToolButton.menu .menuitem:insensitive,GtkComboBox .menu .menuitem:insensitive,.primary-toolbar .button .menu .menuitem:insensitive,.toolbar .menu .menuitem:insensitive,.toolbar .primary-toolbar .menu .menuitem:insensitive,.menu .menuitem:insensitive{color:mix(@menu_fg_color,@menu_bg_color,0.4);text-shadow:none;}\n.menuitem .accelerator{color:alpha(@menu_fg_color,0.6);}\n.menuitem .accelerator:insensitive{color:alpha(mix(@menu_fg_color,@menu_bg_color,0.5),0.6);text-shadow:none;}\n.menuitem.separator{color:shade(@menu_bg_color,0.9);border-color:shade(@menu_bg_color,0.9);}\nPanelWidget,PanelApplet,PanelToplevel,PanelSeparator,.gnome-panel-menu-bar,PanelApplet > GtkMenuBar.menubar,PanelApplet > GtkMenuBar.menubar.menuitem,PanelMenuBar.menubar,PanelMenuBar.menubar.menuitem,PanelAppletFrame,UnityPanelWidget,.unity-panel,.unity-panel.menubar,.unity-panel .menubar{background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to (shade(@panel_bg_color,0.9)));border-color:shade(@panel_bg_color,0.8);color:@panel_fg_color;}\nPanelApplet .button:prelight,.unity-panel.menubar.menuitem:hover,.unity-panel.menubar .menuitem *:hover{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,1.5)),to (shade(@panel_bg_color,1.2)));border-color:shade(@panel_bg_color,0.85);color:@panel_fg_color;}\nPanelApplet .button{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,1.3)),to (shade(@panel_bg_color,1.0)));border-color:shade(@panel_bg_color,0.7);color:@panel_fg_color;text-shadow:none;}\nPanelApplet .button:prelight:active,PanelApplet .button:active{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,0.85)),to (shade(@panel_bg_color,1.0)));border-color:shade(@panel_bg_color,0.7);}".printf(panelbg_value, panelfg_value, menubg_value, menufg_value);
+			string text = "@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\nPanelWidget,PanelApplet,PanelToplevel,PanelSeparator,.gnome-panel-menu-bar,PanelApplet > GtkMenuBar.menubar,PanelApplet > GtkMenuBar.menubar.menuitem,PanelMenuBar.menubar,PanelMenuBar.menubar.menuitem,PanelAppletFrame,UnityPanelWidget,.unity-panel,.unity-panel.menubar,.unity-panel .menubar{background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to (shade(@panel_bg_color,0.9)));border-color:shade(@panel_bg_color,0.8);color:@panel_fg_color;}\nPanelApplet .button:prelight,.unity-panel.menubar.menuitem:hover,.unity-panel.menubar .menuitem *:hover{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,1.5)),to (shade(@panel_bg_color,1.2)));border-color:shade(@panel_bg_color,0.85);color:@panel_fg_color;}\nPanelApplet .button{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,1.3)),to (shade(@panel_bg_color,1.0)));border-color:shade(@panel_bg_color,0.7);color:@panel_fg_color;text-shadow:none;}\nPanelApplet .button:prelight:active,PanelApplet .button:active{background-image:-gtk-gradient(linear,left top,left bottom,from (shade(@panel_bg_color,0.85)),to (shade(@panel_bg_color,1.0)));border-color:shade(@panel_bg_color,0.7);}\nGtkTreeMenu.menu,GtkMenuToolButton.menu,GtkComboBox .menu,.primary-toolbar .button .menu,.toolbar .menu,.toolbar .primary-toolbar .menu,.menu{background-color:@menu_bg_color;color:@menu_fg_color;border-color:shade(@menu_bg_color,0.7);box-shadow:none;-unico-inner-stroke-width:0;}\nGtkTreeMenu .menuitem *,GtkMenuToolButton .menuitem *,GtkComboBox .menuitem *,GtkTreeMenu.menu .menuitem,GtkMenuToolButton.menu .menuitem,GtkComboBox .menu .menuitem,.primary-toolbar .button .menu .menuitem,.toolbar .menu .menuitem,.toolbar .primary-toolbar .menu .menuitem,.menu .menuitem{color:@menu_fg_color;text-shadow:none;}\nGtkTreeMenu .menuitem *:insensitive,GtkMenuToolButton .menuitem *:insensitive,GtkComboBox .menuitem *:insensitive,.menu .menuitem *:insensitive,GtkTreeMenu.menu .menuitem:insensitive,GtkMenuToolButton.menu .menuitem:insensitive,GtkComboBox .menu .menuitem:insensitive,.primary-toolbar .button .menu .menuitem:insensitive,.toolbar .menu .menuitem:insensitive,.toolbar .primary-toolbar .menu .menuitem:insensitive,.menu .menuitem:insensitive{color:mix(@menu_fg_color,@menu_bg_color,0.4);text-shadow:none;}\n.menuitem .accelerator{color:alpha(@menu_fg_color,0.6);}\n.menuitem .accelerator:insensitive{color:alpha(mix(@menu_fg_color,@menu_bg_color,0.5),0.6);text-shadow:none;}\n.menuitem.separator{color:shade(@menu_bg_color,0.9);border-color:shade(@menu_bg_color,0.9);}".printf(panelbg_value, panelfg_value, menubg_value, menufg_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
 				written += dos.write (data[written:data.length]);
 			}
 		} catch (Error e) {
-			stderr.printf ("Could not write configuration: %s\n", e.message);
+			stderr.printf ("Could not write gtk3 configuration: %s\n", e.message);
 		}
 		try {
 			var dos = new DataOutputStream (gtk2_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("# GTK theme preferences\n");
-			string text = "style\"gtk-theme-config-menu\"{\nbg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"\nfg[NORMAL]=\"%s\"\nfg[INSENSITIVE]=mix(0.5,\"%s\",\"%s\")\n}\nwidget_class\"*<GtkMenu>*\"style\"gtk-theme-config-menu\"\nstyle\"gtk-theme-config-panel\"{\nbg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")\nfg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"\n}\nclass\"PanelApp*\"style\"gtk-theme-config-panel\"\nclass\"PanelToplevel*\"style\"gtk-theme-config-panel\"\nwidget\"*PanelWidget*\"style\"gtk-theme-config-panel\"\nwidget\"*PanelApplet*\"style\"gtk-theme-config-panel\"\nwidget\"*fast-user-switch*\"style\"gtk-theme-config-panel\"\nwidget\"*CPUFreq*Applet*\"style\"gtk-theme-config-panel\"\nwidget_class\"*PanelToplevel*\"style\"gtk-theme-config-panel\"\nwidget_class\"*notif*\"style\"gtk-theme-config-panel\"\nwidget_class\"*Notif*\"style\"gtk-theme-config-panel\"\nwidget_class\"*Tray*\"style\"gtk-theme-config-panel\"\nwidget_class\"*tray*\"style\"gtk-theme-config-panel\"\nwidget\"*Xfce*Panel*\"style\"gtk-theme-config-panel\"\nclass\"*Xfce*Panel*\"style\"gtk-theme-config-panel\"".printf(menubg_value, menubg_value, menubg_value, menufg_value, menufg_value, menubg_value, panelbg_value, panelbg_value, panelbg_value, panelbg_value, panelfg_value, panelfg_value, panelfg_value, panelfg_value);
+			string text = "style\"gtk-theme-config-panel\"\nwidget_class\"*PanelToplevel*\"style\"gtk-theme-config-panel\"\nwidget_class\"*notif*\"style\"gtk-theme-config-panel\"\nwidget_class\"*Notif*\"style\"gtk-theme-config-panel\"\nwidget_class\"*Tray*\"style\"gtk-theme-config-panel\"\nwidget_class\"*tray*\"style\"gtk-theme-config-panel\"\nwidget\"*Xfce*Panel*\"style\"gtk-theme-config-panel\"\nclass\"*Xfce*Panel*\"style\"gtk-theme-config-panel\"style\"gtk-theme-config-menu\"{\nbg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"\nfg[NORMAL]=\"%s\"\nfg[INSENSITIVE]=mix(0.5,\"%s\",\"%s\")\n}\nwidget_class\"*<GtkMenu>*\"style\"gtk-theme-config-menu\"\nstyle\"gtk-theme-config-panel\"{\nbg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")\nfg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"\n}\nclass\"PanelApp*\"style\"gtk-theme-config-panel\"\nclass\"PanelToplevel*\"style\"gtk-theme-config-panel\"\nwidget\"*PanelWidget*\"style\"gtk-theme-config-panel\"\nwidget\"*PanelApplet*\"style\"gtk-theme-config-panel\"\nwidget\"*fast-user-switch*\"style\"gtk-theme-config-panel\"\nwidget\"*CPUFreq*Applet*\"".printf(panelbg_value, panelbg_value, panelbg_value, panelbg_value, panelfg_value, panelfg_value, panelfg_value, panelfg_value, menubg_value, menubg_value, menubg_value, menufg_value, menufg_value, menubg_value);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
 				written += dos.write (data[written:data.length]);
 			}
 		} catch (Error e) {
-			stderr.printf ("Could not write configuration: %s\n", e.message);
+			stderr.printf ("Could not write gtk2 configuration: %s\n", e.message);
 		}
 	}
 }
