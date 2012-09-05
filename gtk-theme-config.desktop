@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GTK theme preferences
+Comment=A tool to configure GTK theme colors
+Exec=gtk-theme-config
+Terminal=false
+Type=Application
+Icon=preferences-desktop-theme
+Categories=GNOME;Settings
