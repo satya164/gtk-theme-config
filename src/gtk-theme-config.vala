@@ -269,6 +269,7 @@ class ThemePrefWindow : ApplicationWindow {
 			reset_defaults ();
 			this.apply_button.sensitive = false;
 			this.reset_button.sensitive = false;
+			this.custom_switch.set_active (false);
 		});
 		close_button.clicked.connect (() => {
 			destroy ();
