@@ -35,8 +35,9 @@ class ThemePrefWindow : ApplicationWindow {
 	private Gdk.RGBA menubg;
 	private Gdk.RGBA menufg;
 
-	private File gtk3_path;
-	private File gtk2_path;
+	private File config_dir;
+	private File home_dir;
+
 
 	private File gtk3_config_file;
 	private File gtk2_config_file;
@@ -45,6 +46,7 @@ class ThemePrefWindow : ApplicationWindow {
 	private File gtk2_saved_file;
 
 	private File file_to_read;
+	private File theme_path;
 
 	private string color_value;
 	private string panelbg_value;
@@ -74,27 +76,20 @@ class ThemePrefWindow : ApplicationWindow {
 
 	private void read_values () {
 
-		// Read the current value
+		// Read the current values
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		var color_scheme = settings.get_string ("gtk-color-scheme");
+		var theme_name = settings.get_string ("gtk-theme");
 
-		if ("#" in color_scheme) {
-			color_value = color_scheme.substring (18, color_scheme.length-19);
-		} else {
-			color_value = "#398ee7";
-		}
+		// Set paths of config files
+		config_dir = File.new_for_path (Environment.get_user_config_dir ());
+		home_dir = File.new_for_path (Environment.get_home_dir ());
 
-		// Set the path of gtk3 config file
-		gtk3_path = File.new_for_path (Environment.get_user_config_dir ());
+		gtk3_config_file = config_dir.get_child ("gtk-3.0").get_child ("gtk.css");
+		gtk3_saved_file = config_dir.get_child ("gtk-3.0").get_child ("gtk.css.saved");	
 
-		gtk3_config_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css");
-		gtk3_saved_file = gtk3_path.get_child ("gtk-3.0").get_child ("gtk.css.saved");		
-
-		// Set the path of gtk2 config file
-		gtk2_path = File.new_for_path (Environment.get_home_dir ());
-
-		gtk2_config_file = gtk2_path.get_child (".gtkrc-2.0");
-		gtk2_saved_file = gtk2_path.get_child (".gtkrc-2.0.saved");
+		gtk2_config_file = home_dir.get_child (".gtkrc-2.0");
+		gtk2_saved_file = home_dir.get_child (".gtkrc-2.0.saved");
 
 		// Create path if doesn't exist
 		if (!gtk3_config_file.get_parent().query_exists ()) {
@@ -103,6 +98,37 @@ class ThemePrefWindow : ApplicationWindow {
 			} catch (Error e) {
 				stderr.printf ("Could not create parent directory: %s\n", e.message);
 			}
+		}
+
+		// Detect current theme path
+		if (home_dir.get_child (".themes/%s/gtk-3.0/gtk-main.css".printf (theme_name)).query_exists ()) {
+			theme_path = home_dir.get_child (".themes/%s/gtk-3.0/gtk-main.css".printf (theme_name));
+		} else if (home_dir.get_child (".themes/%s/gtk-3.0/gtk.css".printf (theme_name)).query_exists ()) {
+			theme_path = home_dir.get_child (".themes/%s/gtk-3.0/gtk.css".printf (theme_name));
+		} else if (File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk-main.css".printf (theme_name)).query_exists ()) {
+			theme_path = File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk-main.css".printf (theme_name));
+		} else if (File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.css".printf (theme_name)).query_exists ()) {
+			theme_path = File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.css".printf (theme_name));
+		} else {
+			theme_path = gtk3_config_file;
+		}
+
+		if ("#" in color_scheme) {
+			color_value = color_scheme.substring (18, color_scheme.length-19);
+		} else if (!home_dir.get_child (".themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () && !File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () && theme_path.query_exists ()) {
+			try {
+				var dis = new DataInputStream (theme_path.read ());
+				string line;
+				while ((line = dis.read_line (null)) != null) {
+					if ("@define-color selected_bg_color" in line) {
+						color_value = line.substring (32, line.length-33);
+					}
+				}
+			} catch (Error e) {
+				stderr.printf ("Could not read user theme: %s\n", e.message);
+			}
+		} else {
+			color_value = "#398ee7";
 		}
 
 		// Read the config file
