@@ -183,17 +183,17 @@ class ThemePrefWindow : ApplicationWindow {
 		menufg.parse ("%s".printf (menufg_value.to_string()));
 
 		// Set values
-		if (gtk3_config_file.query_exists ()) {
-			this.custom_switch.set_active (true);
-		} else {
-			this.custom_switch.set_active (false);
-		}
-
 		this.color_button.set_rgba (color);
 		this.panelbg_button.set_rgba (panelbg);
 		this.panelfg_button.set_rgba (panelfg);
 		this.menubg_button.set_rgba (menubg);
 		this.menufg_button.set_rgba (menufg);
+
+		if (gtk3_config_file.query_exists ()) {
+			this.custom_switch.active = true;
+		} else {
+			this.custom_switch.active = false;
+		}
 
 		this.apply_button.sensitive = false;
 	}
@@ -287,18 +287,22 @@ class ThemePrefWindow : ApplicationWindow {
 		panelbg_button.color_set.connect (() => {
 			on_panelbg_color_set ();
 			this.apply_button.sensitive = true;
+			this.custom_switch.active = true;
 		});
 		panelfg_button.color_set.connect (() => {
 			on_panelfg_color_set ();
 			this.apply_button.sensitive = true;
+			this.custom_switch.active = true;
 		});
 		menubg_button.color_set.connect (() => {
 			on_menubg_color_set ();
 			this.apply_button.sensitive = true;
+			this.custom_switch.active = true;
 		});
 		menufg_button.color_set.connect (() => {
 			on_menufg_color_set ();
 			this.apply_button.sensitive = true;
+			this.custom_switch.active = true;
 		});
 		apply_button.clicked.connect (() => {
 			on_settings_applied ();
