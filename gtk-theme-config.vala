@@ -74,12 +74,11 @@ class ThemePrefWindow : ApplicationWindow {
 		}
 
 		// Methods
-		read_values ();
 		create_widgets ();
 		connect_signals ();
 	}
 
-	private void read_values () {
+	private void set_values () {
 
 		// Read the current values
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
@@ -182,6 +181,21 @@ class ThemePrefWindow : ApplicationWindow {
 		menubg.parse ("%s".printf (menubg_value.to_string()));
 		menufg = Gdk.RGBA ();
 		menufg.parse ("%s".printf (menufg_value.to_string()));
+
+		// Set values
+		if (gtk3_config_file.query_exists ()) {
+			this.custom_switch.set_active (true);
+		} else {
+			this.custom_switch.set_active (false);
+		}
+
+		this.color_button.set_rgba (color);
+		this.panelbg_button.set_rgba (panelbg);
+		this.panelfg_button.set_rgba (panelfg);
+		this.menubg_button.set_rgba (menubg);
+		this.menufg_button.set_rgba (menufg);
+
+		this.apply_button.sensitive = false;
 	}
 
 	private void create_widgets () {
@@ -189,10 +203,6 @@ class ThemePrefWindow : ApplicationWindow {
 		// Create and setup widgets
 		this.custom_switch = new Switch ();
 		this.custom_switch.set_halign (Gtk.Align.END);
-
-		if (gtk3_config_file.query_exists ()) {
-			this.custom_switch.set_active (true);
-		}
 
 		this.separator1 = new Separator (Gtk.Orientation.HORIZONTAL);
 		this.separator2 = new Separator (Gtk.Orientation.HORIZONTAL);
@@ -220,14 +230,13 @@ class ThemePrefWindow : ApplicationWindow {
 		this.menufg_label = new Label.with_mnemonic ("_Menu text color");
 		this.menufg_label.set_halign (Gtk.Align.START);
 
-		this.color_button = new ColorButton.with_rgba (color);
-		this.panelbg_button = new ColorButton.with_rgba (panelbg);
-		this.panelfg_button = new ColorButton.with_rgba (panelfg);
-		this.menubg_button = new ColorButton.with_rgba (menubg);
-		this.menufg_button = new ColorButton.with_rgba (menufg);
+		this.color_button = new ColorButton ();
+		this.panelbg_button = new ColorButton ();
+		this.panelfg_button = new ColorButton ();
+		this.menubg_button = new ColorButton ();
+		this.menufg_button = new ColorButton ();
 
 		this.apply_button = new Button.from_stock (Stock.APPLY);
-		this.apply_button.sensitive = false;
 		this.reset_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
 		this.close_button = new Button.from_stock (Stock.CLOSE);
 
@@ -259,6 +268,8 @@ class ThemePrefWindow : ApplicationWindow {
 		grid.attach_next_to (close_button, reset_button, Gtk.PositionType.RIGHT, 1, 1);
 
 		this.add (grid);
+
+		set_values ();
 	}
 
 	private void connect_signals () {
@@ -297,9 +308,8 @@ class ThemePrefWindow : ApplicationWindow {
 		reset_button.clicked.connect (() => {
 			reset_color_scheme ();
 			reset_config ();
-			this.apply_button.sensitive = false;
+			set_values ();
 			this.reset_button.sensitive = false;
-			this.custom_switch.set_active (false);
 		});
 		close_button.clicked.connect (() => {
 			destroy ();
