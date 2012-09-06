@@ -1,21 +1,27 @@
 CC=valac
 CFLAGS=--pkg gtk+-3.0
+LDFLAGS=-X -lm
+SOURCE=gtk-theme-config.vala
+BINARY=gtk-theme-config
+DESKTOPFILE=gtk-theme-config.desktop
+CLEAN=rm -f
 INSTALL=install
 INSTALL_PROGRAM=$(INSTALL) -Dpm 0755
 INSTALL_DATA=$(INSTALL) -Dpm 0644
 
-all: gtk-theme-config
+all: $(BINARY)
 
-gtk-theme-config: gtk-theme-config.vala
-	$(CC) $(CFLAGS) gtk-theme-config.vala -o gtk-theme-config
+$(BINARY): $(SOURCE)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCE) -o $(BINARY)
 
 clean:
-	rm -rf gtk-theme-config
+	$(CLEAN) $(BINARY)
 
 install: all
-	$(INSTALL_PROGRAM) gtk-theme-config $(DESTDIR)/usr/bin/gtk-theme-config
-	$(INSTALL_DATA) gtk-theme-config.desktop $(DESTDIR)/usr/share/applications/gtk-theme-config.desktop
+	$(INSTALL_PROGRAM) $(BINARY) $(DESTDIR)/usr/bin/$(BINARY)
+	$(INSTALL_DATA) $(DESKTOPFILE) $(DESTDIR)/usr/share/applications/$(DESKTOPFILE)
 
 uninstall:
-	rm -f $(DESTDIR)/usr/bin/gtk-theme-config
-	rm -f $(DESTDIR)/usr/share/applications/gtk-theme-config.desktop
+	$(CLEAN) $(DESTDIR)/usr/bin/$(BINARY)
+	$(CLEAN) $(DESTDIR)/usr/share/applications/$(DESKTOPFILE)
+
