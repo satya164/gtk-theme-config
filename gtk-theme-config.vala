@@ -295,45 +295,45 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	private void connect_signals () {
-		custom_switch.notify["active"].connect (() => {
-			if ((custom_switch as Switch).get_active()) {
+		this.custom_switch.notify["active"].connect (() => {
+			if (this.custom_switch.get_active()) {
 				restore_config ();
 			} else {
 				save_config ();
 			}
 		});
-		color_button.color_set.connect (() => {
+		this.color_button.color_set.connect (() => {
 			on_selected_color_set ();
 			this.apply_button.set_sensitive (true);
 		});
-		panelbg_button.color_set.connect (() => {
+		this.panelbg_button.color_set.connect (() => {
 			on_panelbg_color_set ();
 			this.apply_button.set_sensitive (true);
 		});
-		panelfg_button.color_set.connect (() => {
+		this.panelfg_button.color_set.connect (() => {
 			on_panelfg_color_set ();
 			this.apply_button.set_sensitive (true);
 		});
-		menubg_button.color_set.connect (() => {
+		this.menubg_button.color_set.connect (() => {
 			on_menubg_color_set ();
 			this.apply_button.set_sensitive (true);
 		});
-		menufg_button.color_set.connect (() => {
+		this.menufg_button.color_set.connect (() => {
 			on_menufg_color_set ();
 			this.apply_button.set_sensitive (true);
 		});
-		apply_button.clicked.connect (() => {
+		this.apply_button.clicked.connect (() => {
 			on_settings_applied ();
 			this.apply_button.set_sensitive (false);
 			this.reset_button.set_sensitive (true);
 		});
-		reset_button.clicked.connect (() => {
+		this.reset_button.clicked.connect (() => {
 			reset_color_scheme ();
 			reset_config ();
 			set_values ();
 			this.reset_button.set_sensitive (false);
 		});
-		close_button.clicked.connect (() => {
+		this.close_button.clicked.connect (() => {
 			destroy ();
 		});
 	}
@@ -389,20 +389,36 @@ class ThemePrefWindow : ApplicationWindow {
 
 		try {
 			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
+		} catch (Error e) {
+			stderr.printf ("Could not set color scheme for gtk3: %s\n", e.message);
+		}
+		try {
 			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
+		} catch (Error e) {
+			stderr.printf ("Could not set color scheme for gtk2: %s\n", e.message);
+		}
+		try {
 			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
 		} catch (Error e) {
-			stderr.printf ("Could not set color scheme: %s\n", e.message);
+			stderr.printf ("Could not set color scheme for xfce: %s\n", e.message);
 		}
 	}
 
 	private void reset_color_scheme () {
 		try {
 			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme for gtk3: %s\n", e.message);
+		}
+		try {
 			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme for gtk2: %s\n", e.message);
+		}
+		try {
 			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
 		} catch (Error e) {
-			stderr.printf ("Could not reset color scheme: %s\n", e.message);
+			stderr.printf ("Could not reset color scheme for xfce: %s\n", e.message);
 		}
 	}
 
