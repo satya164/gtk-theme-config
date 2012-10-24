@@ -1,87 +1,87 @@
 using Gtk;
 
 class ThemePrefWindow : ApplicationWindow {
-	private Separator separator1;
-	private Separator separator2;
-	private Separator separator3;
+	Separator separator1;
+	Separator separator2;
+	Separator separator3;
 
-	private Label heading1;
-	private Label heading2;
-	private Label heading3;
+	Label heading1;
+	Label heading2;
+	Label heading3;
 
-	private Label selectbg_label;
-	private Label selectfg_label;
-	private Label panelbg_label;
-	private Label panelfg_label;
-	private Label menubg_label;
-	private Label menufg_label;
+	Label selectbg_label;
+	Label selectfg_label;
+	Label panelbg_label;
+	Label panelfg_label;
+	Label menubg_label;
+	Label menufg_label;
 
-	private ColorButton selectbg_button;
-	private ColorButton selectfg_button;
-	private ColorButton panelbg_button;
-	private ColorButton panelfg_button;
-	private ColorButton menubg_button;
-	private ColorButton menufg_button;
+	ColorButton selectbg_button;
+	ColorButton selectfg_button;
+	ColorButton panelbg_button;
+	ColorButton panelfg_button;
+	ColorButton menubg_button;
+	ColorButton menufg_button;
 
-	private Switch selectbg_switch;
-	private Switch selectfg_switch;
-	private Switch panelbg_switch;
-	private Switch panelfg_switch;
-	private Switch menubg_switch;
-	private Switch menufg_switch;
+	Switch selectbg_switch;
+	Switch selectfg_switch;
+	Switch panelbg_switch;
+	Switch panelfg_switch;
+	Switch menubg_switch;
+	Switch menufg_switch;
 
-	private Button apply_button;
-	private Button reset_button;
-	private Button close_button;
+	Button apply_button;
+	Button reset_button;
+	Button close_button;
 
-	private Gdk.RGBA selectbg;
-	private Gdk.RGBA selectfg;
-	private Gdk.RGBA panelbg;
-	private Gdk.RGBA panelfg;
-	private Gdk.RGBA menubg;
-	private Gdk.RGBA menufg;
+	Gdk.RGBA selectbg;
+	Gdk.RGBA selectfg;
+	Gdk.RGBA panelbg;
+	Gdk.RGBA panelfg;
+	Gdk.RGBA menubg;
+	Gdk.RGBA menufg;
 
-	private Gdk.RGBA color_rgb;
+	Gdk.RGBA color_rgb;
 
-	private File config_dir;
-	private File home_dir;
+	File config_dir;
+	File home_dir;
 
-	private File gtk3_config_file;
-	private File gtk2_config_file;
+	File gtk3_config_file;
+	File gtk2_config_file;
 
-	private File gtk3_saved_file;
-	private File gtk2_saved_file;
+	File gtk3_saved_file;
+	File gtk2_saved_file;
 
-	private File theme_path;
+	File theme_path;
 
-	private string color_hex;
+	string color_hex;
 
-	private string color_scheme;
+	string color_scheme;
 
-	private string selectbg_value;
-	private string selectfg_value;
-	private string panelbg_value;
-	private string panelfg_value;
-	private string menubg_value;
-	private string menufg_value;
+	string selectbg_value;
+	string selectfg_value;
+	string panelbg_value;
+	string panelfg_value;
+	string menubg_value;
+	string menufg_value;
 
-	private string selectbg_state1;
-	private string selectbg_state2;
-	private string selectfg_state1;
-	private string selectfg_state2;
-	private string panelbg_state1;
-	private string panelbg_state2;
-	private string panelfg_state1;
-	private string panelfg_state2;
-	private string menubg_state1;
-	private string menubg_state2;
-	private string menufg_state1;
-	private string menufg_state2;
+	string selectbg_state1;
+	string selectbg_state2;
+	string selectfg_state1;
+	string selectfg_state2;
+	string panelbg_state1;
+	string panelbg_state2;
+	string panelfg_state1;
+	string panelfg_state2;
+	string menubg_state1;
+	string menubg_state2;
+	string menufg_state1;
+	string menufg_state2;
 
-	private string panelbg_gtk2;
-	private string panelfg_gtk2;
-	private string menubg_gtk2;
-	private string menufg_gtk2;
+	string panelbg_gtk2;
+	string panelfg_gtk2;
+	string menubg_gtk2;
+	string menufg_gtk2;
 
 	internal ThemePrefWindow (ThemePrefApp app) {
 		Object (application: app, title: "GTK theme preferences");
@@ -114,7 +114,7 @@ class ThemePrefWindow : ApplicationWindow {
 		Gtk.show_about_dialog (this,
 			"program-name", ("GTK theme preferences"),
 			"copyright", ("Copyright \xc2\xa9 2012 Satyajit Sahoo"),
-			"comments", ("A tool to configure GTK theme colors"),
+			"comments", ("A tool to configure the GTK theme"),
 			"license", license,
 			"wrap-license", true,
 			"website", "http://github.com/satya164/gtk-theme-config",
@@ -122,7 +122,7 @@ class ThemePrefWindow : ApplicationWindow {
 			null);
 	}
 
-	private void set_values () {
+	void set_values () {
 		// Read the current values
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		var color_scheme = settings.get_string ("gtk-color-scheme");
@@ -260,7 +260,7 @@ class ThemePrefWindow : ApplicationWindow {
 		this.apply_button.set_sensitive (false);
 	}
 
-	private void create_widgets () {
+	void create_widgets () {
 		// Create and setup widgets
 		this.separator1 = new Separator (Gtk.Orientation.HORIZONTAL);
 		this.separator2 = new Separator (Gtk.Orientation.HORIZONTAL);
@@ -352,7 +352,7 @@ class ThemePrefWindow : ApplicationWindow {
 		set_values ();
 	}
 
-	private void connect_signals () {
+	void connect_signals () {
 		this.selectbg_button.color_set.connect (() => {
 			on_selectbg_color_set ();
 			this.apply_button.set_sensitive (true);
@@ -396,17 +396,12 @@ class ThemePrefWindow : ApplicationWindow {
 			this.apply_button.set_sensitive (true);
 		});
 		this.apply_button.clicked.connect (() => {
-			reset_config ();
-			reset_color_scheme ();
-			write_config ();
-			set_color_scheme ();
+			on_config_set ();
 			this.apply_button.set_sensitive (false);
 			this.reset_button.set_sensitive (true);
 		});
 		this.reset_button.clicked.connect (() => {
-			reset_config ();
-			reset_color_scheme ();
-			set_values ();
+			on_config_reset ();
 			this.reset_button.set_sensitive (false);
 		});
 		this.close_button.clicked.connect (() => {
@@ -414,7 +409,7 @@ class ThemePrefWindow : ApplicationWindow {
 		});
 	}
 
-	private void rgb_to_hex () {
+	void rgb_to_hex () {
 		int r = (int)Math.round (color_rgb.red * 255);
 		int g = (int)Math.round (color_rgb.green * 255);
 		int b = (int)Math.round (color_rgb.blue * 255);
@@ -422,43 +417,60 @@ class ThemePrefWindow : ApplicationWindow {
 		color_hex = "#%02x%02x%02x".printf (r, g, b);
 	}
 
-	private void on_selectbg_color_set () {
+	void on_selectbg_color_set () {
 		color_rgb =  this.selectbg_button.get_rgba ();
 		rgb_to_hex ();
 		selectbg_value = color_hex;
 	}
 
-	private void on_selectfg_color_set () {
+	void on_selectfg_color_set () {
 		color_rgb =  this.selectfg_button.get_rgba ();
 		rgb_to_hex ();
 		selectfg_value = color_hex;
 	}
 
-	private void on_panelbg_color_set () {
+	void on_panelbg_color_set () {
 		color_rgb =  this.panelbg_button.get_rgba ();
 		rgb_to_hex ();
 		panelbg_value = color_hex;
 	}
 
-	private void on_panelfg_color_set () {
+	void on_panelfg_color_set () {
 		color_rgb =  this.panelfg_button.get_rgba ();
 		rgb_to_hex ();
 		panelfg_value = color_hex;
 	}
 
-	private void on_menubg_color_set () {
+	void on_menubg_color_set () {
 		color_rgb =  this.menubg_button.get_rgba ();
 		rgb_to_hex ();
 		menubg_value = color_hex;
 	}
 
-	private void on_menufg_color_set () {
+	void on_menufg_color_set () {
 		color_rgb =  this.menufg_button.get_rgba ();
 		rgb_to_hex ();
 		menufg_value = color_hex;
 	}
 
-	private void set_color_scheme () {
+	void on_config_set () {
+		reset_config ();
+		reset_color_scheme ();
+		set_vars ();
+		write_config ();
+		set_color_scheme ();
+		notify_change ();
+	}
+
+	void on_config_reset () {
+		reset_config ();
+		reset_color_scheme ();
+		set_values ();
+		notify_change ();
+	}
+
+	void set_vars () {
+		// Determine color scheme
 		if (this.selectbg_switch.get_active() && this.selectfg_switch.get_active()) {
 			color_scheme = "\"selected_bg_color:%s;selected_fg_color:%s;\"".printf (selectbg_value, selectfg_value);
 		} else if (this.selectbg_switch.get_active() && !this.selectfg_switch.get_active()) {
@@ -468,75 +480,8 @@ class ThemePrefWindow : ApplicationWindow {
 		} else {
 			color_scheme = "\"\"";
 		}
-
-		try {
-			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
-		} catch (Error e) {
-			stderr.printf ("Could not set color scheme for gtk3: %s\n", e.message);
-		}
-		try {
-			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
-		} catch (Error e) {
-			stderr.printf ("Could not set color scheme for gtk2: %s\n", e.message);
-		}
-		try {
-			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
-		} catch (Error e) {
-			stderr.printf ("Could not set color scheme for xfce: %s\n", e.message);
-		}
-	}
-
-	private void reset_color_scheme () {
-		try {
-			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
-		} catch (Error e) {
-			stderr.printf ("Could not reset color scheme for gtk3: %s\n", e.message);
-		}
-		try {
-			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
-		} catch (Error e) {
-			stderr.printf ("Could not reset color scheme for gtk2: %s\n", e.message);
-		}
-		try {
-			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
-		} catch (Error e) {
-			stderr.printf ("Could not reset color scheme for xfce: %s\n", e.message);
-		}
-	}
-			
-	private void reset_config () {
-		try {
-			if (gtk3_config_file.query_exists () && !gtk3_saved_file.query_exists ()) {
-				gtk3_config_file.set_display_name ("gtk.css.saved");
-			}
-		} catch (Error e) {
-			stderr.printf ("Could not backup gtk3 configuration: %s\n", e.message);
-		}
-		try {
-			if (gtk2_config_file.query_exists () && !gtk2_saved_file.query_exists ()) {
-				gtk2_config_file.set_display_name (".gtkrc-2.0.saved");
-			}
-		} catch (Error e) {
-			stderr.printf ("Could not backup gtk2 configuration: %s\n", e.message);
-		}
-		try {
-			if (gtk3_config_file.query_exists ()) {
-				gtk3_config_file.delete ();
-			}
-		} catch (Error e) {
-			stderr.printf ("Could not delete previous gtk3 configuration: %s\n", e.message);
-		}
-		try {
-			if (gtk2_config_file.query_exists ()) {
-				gtk2_config_file.delete ();
-			}
-		} catch (Error e) {
-			stderr.printf ("Could not delete previous gtk2 configuration: %s\n", e.message);
-		}
-	}
-
-	private void write_config () {
-		// Determine the variables
+		
+		// Determine states
 		if (this.selectbg_switch.get_active()) {
 			selectbg_state1 = "/* selectbg-on */";
 			selectbg_state2 = "/* selectbg-on */";
@@ -587,8 +532,76 @@ class ThemePrefWindow : ApplicationWindow {
 			menufg_state2 = "menufg-off */";
 			menufg_gtk2 = "";
 		}
+	}
 
-		// Write the configuration
+	void set_color_scheme () {
+		try {
+			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
+		} catch (Error e) {
+			stderr.printf ("Could not set color scheme for gtk3: %s\n", e.message);
+		}
+		try {
+			Process.spawn_command_line_sync ("gconftool-2 -s /desktop/gnome/interface/gtk_color_scheme -t string %s".printf (color_scheme));
+		} catch (Error e) {
+			stderr.printf ("Could not set color scheme for gtk2: %s\n", e.message);
+		}
+		try {
+			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
+		} catch (Error e) {
+			stderr.printf ("Could not set color scheme for xfce: %s\n", e.message);
+		}
+	}
+
+	void reset_color_scheme () {
+		try {
+			Process.spawn_command_line_sync ("gsettings reset org.gnome.desktop.interface gtk-color-scheme");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme for gtk3: %s\n", e.message);
+		}
+		try {
+			Process.spawn_command_line_sync ("gconftool-2 -u /desktop/gnome/interface/gtk_color_scheme");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme for gtk2: %s\n", e.message);
+		}
+		try {
+			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme for xfce: %s\n", e.message);
+		}
+	}
+			
+	void reset_config () {
+		try {
+			if (gtk3_config_file.query_exists () && !gtk3_saved_file.query_exists ()) {
+				gtk3_config_file.set_display_name ("gtk.css.saved");
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not backup gtk3 configuration: %s\n", e.message);
+		}
+		try {
+			if (gtk2_config_file.query_exists () && !gtk2_saved_file.query_exists ()) {
+				gtk2_config_file.set_display_name (".gtkrc-2.0.saved");
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not backup gtk2 configuration: %s\n", e.message);
+		}
+		try {
+			if (gtk3_config_file.query_exists ()) {
+				gtk3_config_file.delete ();
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not delete previous gtk3 configuration: %s\n", e.message);
+		}
+		try {
+			if (gtk2_config_file.query_exists ()) {
+				gtk2_config_file.delete ();
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not delete previous gtk2 configuration: %s\n", e.message);
+		}
+	}
+
+	void write_config () {
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
@@ -613,6 +626,9 @@ class ThemePrefWindow : ApplicationWindow {
 		} catch (Error e) {
 			stderr.printf ("Could not write gtk2 configuration: %s\n", e.message);
 		}
+	}
+
+	void notify_change() {
 		try {
 			Process.spawn_command_line_sync("notify-send -h int:transient:1 -i \"preferences-desktop-theme\" \"Changes applied.\" \"You might need to restart running applications.\"");
 		} catch (Error e) {
