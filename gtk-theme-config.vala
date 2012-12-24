@@ -131,6 +131,21 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	void set_values () {
+
+		// Set default values
+		selectbg_value = "#398ee7";
+		selectfg_value = "#eeeeee";
+		panelbg_value = "#cccccc";
+		panelfg_value = "#333333";
+		menubg_value = "#eeeeee";
+		menufg_value = "#333333";
+		selectbg_switch.set_active (false);
+		selectfg_switch.set_active (false);
+		panelbg_switch.set_active (false);
+		panelfg_switch.set_active (false);
+		menubg_switch.set_active (false);
+		menufg_switch.set_active (false);
+
 		// Read the current values
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
 		var color_scheme = settings.get_string ("gtk-color-scheme");
@@ -158,31 +173,17 @@ class ThemePrefWindow : ApplicationWindow {
 		// Detect current theme path
 		if (gtk3_config_file.query_exists ()) {
 			theme_path = gtk3_config_file;
-		} else if (home_dir.get_child (".themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () && home_dir.get_child (".themes/%s/gtk-3.0/gtk-main.css".printf (theme_name)).query_exists ()) {
+		} else if (home_dir.get_child (".themes/%s/gtk-3.0/gtk-main.css".printf (theme_name)).query_exists ()) {
 			theme_path = home_dir.get_child (".themes/%s/gtk-3.0/gtk-main.css".printf (theme_name));
 		} else if (home_dir.get_child (".themes/%s/gtk-3.0/gtk.css".printf (theme_name)).query_exists ()) {
 			theme_path = home_dir.get_child (".themes/%s/gtk-3.0/gtk.css".printf (theme_name));
-		} else if (File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () && File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk-main.css".printf (theme_name)).query_exists ()) {
+		} else if (File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk-main.css".printf (theme_name)).query_exists ()) {
 			theme_path = File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk-main.css".printf (theme_name));
 		} else if (File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.css".printf (theme_name)).query_exists ()) {
 			theme_path = File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.css".printf (theme_name));
-		} else  {
+		} else {
 			theme_path = gtk3_saved_file;
 		}
-
-		// Set default values
-		selectbg_value = "#398ee7";
-		selectfg_value = "#eeeeee";
-		panelbg_value = "#cccccc";
-		panelfg_value = "#333333";
-		menubg_value = "#eeeeee";
-		menufg_value = "#333333";
-		selectbg_switch.set_active (false);
-		selectfg_switch.set_active (false);
-		panelbg_switch.set_active (false);
-		panelfg_switch.set_active (false);
-		menubg_switch.set_active (false);
-		menufg_switch.set_active (false);
 
 		// Read the current theme file
 		try {
@@ -243,83 +244,81 @@ class ThemePrefWindow : ApplicationWindow {
 			}
 		}
 
-		// Parse colors
+		// Set colors
 		selectbg = Gdk.RGBA ();
 		selectbg.parse ("%s".printf (selectbg_value));
+		selectbg_button.set_rgba (selectbg);
 		selectfg = Gdk.RGBA ();
 		selectfg.parse ("%s".printf (selectfg_value));
+		selectfg_button.set_rgba (selectfg);
 		panelbg = Gdk.RGBA ();
 		panelbg.parse ("%s".printf (panelbg_value));
+		panelbg_button.set_rgba (panelbg);
 		panelfg = Gdk.RGBA ();
 		panelfg.parse ("%s".printf (panelfg_value));
+		panelfg_button.set_rgba (panelfg);
 		menubg = Gdk.RGBA ();
 		menubg.parse ("%s".printf (menubg_value));
+		menubg_button.set_rgba (menubg);
 		menufg = Gdk.RGBA ();
 		menufg.parse ("%s".printf (menufg_value));
+		menufg_button.set_rgba (menufg);
 
-		// Set values
-		this.selectbg_button.set_rgba (selectbg);
-		this.selectfg_button.set_rgba (selectfg);
-		this.panelbg_button.set_rgba (panelbg);
-		this.panelfg_button.set_rgba (panelfg);
-		this.menubg_button.set_rgba (menubg);
-		this.menufg_button.set_rgba (menufg);
-
-		this.apply_button.set_sensitive (false);
+		apply_button.set_sensitive (false);
 	}
 
 	void create_widgets () {
 		// Create and setup widgets
-		this.separator1 = new Separator (Gtk.Orientation.HORIZONTAL);
-		this.separator2 = new Separator (Gtk.Orientation.HORIZONTAL);
-		this.separator3 = new Separator (Gtk.Orientation.HORIZONTAL);
+		separator1 = new Separator (Gtk.Orientation.HORIZONTAL);
+		separator2 = new Separator (Gtk.Orientation.HORIZONTAL);
+		separator3 = new Separator (Gtk.Orientation.HORIZONTAL);
 
-		this.heading1 = new Label.with_mnemonic ("_<b>Selection colors</b>");
-		this.heading1.set_use_markup (true);
-		this.heading1.set_halign (Gtk.Align.START);
-		this.heading2 = new Label.with_mnemonic ("_<b>Panel colors</b>");
-		this.heading2.set_use_markup (true);
-		this.heading2.set_halign (Gtk.Align.START);
-		this.heading3 = new Label.with_mnemonic ("_<b>Menu colors</b>");
-		this.heading3.set_use_markup (true);
-		this.heading3.set_halign (Gtk.Align.START);
+		heading1 = new Label.with_mnemonic ("_<b>Selection colors</b>");
+		heading1.set_use_markup (true);
+		heading1.set_halign (Gtk.Align.START);
+		heading2 = new Label.with_mnemonic ("_<b>Panel colors</b>");
+		heading2.set_use_markup (true);
+		heading2.set_halign (Gtk.Align.START);
+		heading3 = new Label.with_mnemonic ("_<b>Menu colors</b>");
+		heading3.set_use_markup (true);
+		heading3.set_halign (Gtk.Align.START);
 
-		this.selectbg_label = new Label.with_mnemonic ("_Selection background");
-		this.selectbg_label.set_halign (Gtk.Align.START);
-		this.selectfg_label = new Label.with_mnemonic ("_Selection text");
-		this.selectfg_label.set_halign (Gtk.Align.START);
-		this.panelbg_label = new Label.with_mnemonic ("_Panel background");
-		this.panelbg_label.set_halign (Gtk.Align.START);
-		this.panelfg_label = new Label.with_mnemonic ("_Panel text");
-		this.panelfg_label.set_halign (Gtk.Align.START);
-		this.menubg_label = new Label.with_mnemonic ("_Menu background");
-		this.menubg_label.set_halign (Gtk.Align.START);
-		this.menufg_label = new Label.with_mnemonic ("_Menu text");
-		this.menufg_label.set_halign (Gtk.Align.START);
+		selectbg_label = new Label.with_mnemonic ("_Selection background");
+		selectbg_label.set_halign (Gtk.Align.START);
+		selectfg_label = new Label.with_mnemonic ("_Selection text");
+		selectfg_label.set_halign (Gtk.Align.START);
+		panelbg_label = new Label.with_mnemonic ("_Panel background");
+		panelbg_label.set_halign (Gtk.Align.START);
+		panelfg_label = new Label.with_mnemonic ("_Panel text");
+		panelfg_label.set_halign (Gtk.Align.START);
+		menubg_label = new Label.with_mnemonic ("_Menu background");
+		menubg_label.set_halign (Gtk.Align.START);
+		menufg_label = new Label.with_mnemonic ("_Menu text");
+		menufg_label.set_halign (Gtk.Align.START);
 
-		this.selectbg_button = new ColorButton ();
-		this.selectfg_button = new ColorButton ();
-		this.panelbg_button = new ColorButton ();
-		this.panelfg_button = new ColorButton ();
-		this.menubg_button = new ColorButton ();
-		this.menufg_button = new ColorButton ();
+		selectbg_button = new ColorButton ();
+		selectfg_button = new ColorButton ();
+		panelbg_button = new ColorButton ();
+		panelfg_button = new ColorButton ();
+		menubg_button = new ColorButton ();
+		menufg_button = new ColorButton ();
 
-		this.selectbg_switch = new Switch ();
-		this.selectbg_switch.set_halign (Gtk.Align.END);
-		this.selectfg_switch = new Switch ();
-		this.selectfg_switch.set_halign (Gtk.Align.END);
-		this.panelbg_switch = new Switch ();
-		this.panelbg_switch.set_halign (Gtk.Align.END);
-		this.panelfg_switch = new Switch ();
-		this.panelfg_switch.set_halign (Gtk.Align.END);
-		this.menubg_switch = new Switch ();
-		this.menubg_switch.set_halign (Gtk.Align.END);
-		this.menufg_switch = new Switch ();
-		this.menufg_switch.set_halign (Gtk.Align.END);
+		selectbg_switch = new Switch ();
+		selectbg_switch.set_halign (Gtk.Align.END);
+		selectfg_switch = new Switch ();
+		selectfg_switch.set_halign (Gtk.Align.END);
+		panelbg_switch = new Switch ();
+		panelbg_switch.set_halign (Gtk.Align.END);
+		panelfg_switch = new Switch ();
+		panelfg_switch.set_halign (Gtk.Align.END);
+		menubg_switch = new Switch ();
+		menubg_switch.set_halign (Gtk.Align.END);
+		menufg_switch = new Switch ();
+		menufg_switch.set_halign (Gtk.Align.END);
 
-		this.apply_button = new Button.from_stock (Stock.APPLY);
-		this.reset_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
-		this.close_button = new Button.from_stock (Stock.CLOSE);
+		apply_button = new Button.from_stock (Stock.APPLY);
+		reset_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
+		close_button = new Button.from_stock (Stock.CLOSE);
 
 		// Layout widgets
 		var grid = new Grid ();
@@ -361,58 +360,58 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	void connect_signals () {
-		this.selectbg_button.color_set.connect (() => {
+		selectbg_button.color_set.connect (() => {
 			on_selectbg_color_set ();
-			this.apply_button.set_sensitive (true);
+			apply_button.set_sensitive (true);
 		});
-		this.selectfg_button.color_set.connect (() => {
+		selectfg_button.color_set.connect (() => {
 			on_selectfg_color_set ();
-			this.apply_button.set_sensitive (true);
+			apply_button.set_sensitive (true);
 		});
-		this.panelbg_button.color_set.connect (() => {
+		panelbg_button.color_set.connect (() => {
 			on_panelbg_color_set ();
-			this.apply_button.set_sensitive (true);
+			apply_button.set_sensitive (true);
 		});
-		this.panelfg_button.color_set.connect (() => {
+		panelfg_button.color_set.connect (() => {
 			on_panelfg_color_set ();
-			this.apply_button.set_sensitive (true);
+			apply_button.set_sensitive (true);
 		});
-		this.menubg_button.color_set.connect (() => {
+		menubg_button.color_set.connect (() => {
 			on_menubg_color_set ();
-			this.apply_button.set_sensitive (true);
+			apply_button.set_sensitive (true);
 		});
-		this.menufg_button.color_set.connect (() => {
+		menufg_button.color_set.connect (() => {
 			on_menufg_color_set ();
-			this.apply_button.set_sensitive (true);
+			apply_button.set_sensitive (true);
 		});
-		this.selectbg_switch.notify["active"].connect (() => {
-			this.apply_button.set_sensitive (true);
+		selectbg_switch.notify["active"].connect (() => {
+			apply_button.set_sensitive (true);
 		});
-		this.selectfg_switch.notify["active"].connect (() => {
-			this.apply_button.set_sensitive (true);
+		selectfg_switch.notify["active"].connect (() => {
+			apply_button.set_sensitive (true);
 		});
-		this.panelbg_switch.notify["active"].connect (() => {
-			this.apply_button.set_sensitive (true);
+		panelbg_switch.notify["active"].connect (() => {
+			apply_button.set_sensitive (true);
 		});
-		this.panelfg_switch.notify["active"].connect (() => {
-			this.apply_button.set_sensitive (true);
+		panelfg_switch.notify["active"].connect (() => {
+			apply_button.set_sensitive (true);
 		});
-		this.menubg_switch.notify["active"].connect (() => {
-			this.apply_button.set_sensitive (true);
+		menubg_switch.notify["active"].connect (() => {
+			apply_button.set_sensitive (true);
 		});
-		this.menufg_switch.notify["active"].connect (() => {
-			this.apply_button.set_sensitive (true);
+		menufg_switch.notify["active"].connect (() => {
+			apply_button.set_sensitive (true);
 		});
-		this.apply_button.clicked.connect (() => {
+		apply_button.clicked.connect (() => {
 			on_config_set ();
-			this.apply_button.set_sensitive (false);
-			this.reset_button.set_sensitive (true);
+			apply_button.set_sensitive (false);
+			reset_button.set_sensitive (true);
 		});
-		this.reset_button.clicked.connect (() => {
+		reset_button.clicked.connect (() => {
 			on_config_reset ();
-			this.reset_button.set_sensitive (false);
+			reset_button.set_sensitive (false);
 		});
-		this.close_button.clicked.connect (() => {
+		close_button.clicked.connect (() => {
 			destroy ();
 		});
 	}
@@ -426,37 +425,37 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	void on_selectbg_color_set () {
-		color_rgb =  this.selectbg_button.get_rgba ();
+		color_rgb =  selectbg_button.get_rgba ();
 		rgb_to_hex ();
 		selectbg_value = color_hex;
 	}
 
 	void on_selectfg_color_set () {
-		color_rgb =  this.selectfg_button.get_rgba ();
+		color_rgb =  selectfg_button.get_rgba ();
 		rgb_to_hex ();
 		selectfg_value = color_hex;
 	}
 
 	void on_panelbg_color_set () {
-		color_rgb =  this.panelbg_button.get_rgba ();
+		color_rgb =  panelbg_button.get_rgba ();
 		rgb_to_hex ();
 		panelbg_value = color_hex;
 	}
 
 	void on_panelfg_color_set () {
-		color_rgb =  this.panelfg_button.get_rgba ();
+		color_rgb =  panelfg_button.get_rgba ();
 		rgb_to_hex ();
 		panelfg_value = color_hex;
 	}
 
 	void on_menubg_color_set () {
-		color_rgb =  this.menubg_button.get_rgba ();
+		color_rgb =  menubg_button.get_rgba ();
 		rgb_to_hex ();
 		menubg_value = color_hex;
 	}
 
 	void on_menufg_color_set () {
-		color_rgb =  this.menufg_button.get_rgba ();
+		color_rgb =  menufg_button.get_rgba ();
 		rgb_to_hex ();
 		menufg_value = color_hex;
 	}
@@ -479,32 +478,32 @@ class ThemePrefWindow : ApplicationWindow {
 
 	void set_vars () {
 		// Determine color scheme
-		if (this.selectbg_switch.get_active() && this.selectfg_switch.get_active()) {
+		if (selectbg_switch.get_active() && selectfg_switch.get_active()) {
 			color_scheme = "\"selected_bg_color:%s;selected_fg_color:%s;\"".printf (selectbg_value, selectfg_value);
-		} else if (this.selectbg_switch.get_active() && !this.selectfg_switch.get_active()) {
+		} else if (selectbg_switch.get_active() && !selectfg_switch.get_active()) {
 			color_scheme = "\"selected_bg_color:%s;\"".printf (selectbg_value);
-		} else if (!this.selectfg_switch.get_active() && this.selectfg_switch.get_active()) {
+		} else if (!selectfg_switch.get_active() && selectfg_switch.get_active()) {
 			color_scheme = "\"selected_fg_color:%s;\"".printf (selectfg_value);
 		} else {
 			color_scheme = "\"\"";
 		}
 		
 		// Determine states
-		if (this.selectbg_switch.get_active()) {
+		if (selectbg_switch.get_active()) {
 			selectbg_state1 = "/* selectbg-on */";
 			selectbg_state2 = "/* selectbg-on */";
 		} else {
 			selectbg_state1 = "/* selectbg-off";
 			selectbg_state2 = "selectbg-off */";
 		}
-		if (this.selectfg_switch.get_active()) {
+		if (selectfg_switch.get_active()) {
 			selectfg_state1 = "/* selectfg-on */";
 			selectfg_state2 = "/* selectfg-on */";
 		} else {
 			selectfg_state1 = "/* selectfg-off";
 			selectfg_state2 = "selectfg-off */";
 		}
-		if (this.panelbg_switch.get_active()) {
+		if (panelbg_switch.get_active()) {
 			panelbg_state1 = "/* panelbg-on */";
 			panelbg_state2 = "/* panelbg-on */";
 			panelbg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")".printf(panelbg_value, panelbg_value, panelbg_value, panelbg_value);
@@ -513,7 +512,7 @@ class ThemePrefWindow : ApplicationWindow {
 			panelbg_state2 = "panelbg-off */";
 			panelbg_gtk2 = "";
 		}
-		if (this.panelfg_switch.get_active()) {
+		if (panelfg_switch.get_active()) {
 			panelfg_state1 = "/* panelfg-on */";
 			panelfg_state2 = "/* panelfg-on */";
 			panelfg_gtk2 = "fg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"".printf(panelfg_value, panelfg_value, panelfg_value, panelfg_value);
@@ -522,7 +521,7 @@ class ThemePrefWindow : ApplicationWindow {
 			panelfg_state2 = "panelfg-off */";
 			panelfg_gtk2 = "";
 		}
-		if (this.menubg_switch.get_active()) {
+		if (menubg_switch.get_active()) {
 			menubg_state1 = "/* menubg-on */";
 			menubg_state2 = "/* menubg-on */";
 			menubg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"".printf(menubg_value, menubg_value, menubg_value);
@@ -531,7 +530,7 @@ class ThemePrefWindow : ApplicationWindow {
 			menubg_state2 = "menubg-off */";;
 			menubg_gtk2 = "";
 		}
-		if (this.menufg_switch.get_active()) {
+		if (menufg_switch.get_active()) {
 			menufg_state1 = "/* menufg-on */";
 			menufg_state2 = "/* menufg-on */";
 			menufg_gtk2 = "fg[NORMAL]=\"%s\"".printf(menufg_value);
