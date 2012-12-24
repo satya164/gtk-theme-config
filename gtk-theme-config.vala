@@ -1,10 +1,6 @@
 using Gtk;
 
 class ThemePrefWindow : ApplicationWindow {
-	Separator separator1;
-	Separator separator2;
-	Separator separator3;
-
 	Label heading1;
 	Label heading2;
 	Label heading3;
@@ -23,12 +19,12 @@ class ThemePrefWindow : ApplicationWindow {
 	ColorButton menubg_button;
 	ColorButton menufg_button;
 
-	Switch selectbg_switch;
-	Switch selectfg_switch;
-	Switch panelbg_switch;
-	Switch panelfg_switch;
-	Switch menubg_switch;
-	Switch menufg_switch;
+	CheckButton selectbg_check;
+	CheckButton selectfg_check;
+	CheckButton panelbg_check;
+	CheckButton panelfg_check;
+	CheckButton menubg_check;
+	CheckButton menufg_check;
 
 	Button apply_button;
 	Button reset_button;
@@ -139,12 +135,12 @@ class ThemePrefWindow : ApplicationWindow {
 		panelfg_value = "#333333";
 		menubg_value = "#eeeeee";
 		menufg_value = "#333333";
-		selectbg_switch.set_active (false);
-		selectfg_switch.set_active (false);
-		panelbg_switch.set_active (false);
-		panelfg_switch.set_active (false);
-		menubg_switch.set_active (false);
-		menufg_switch.set_active (false);
+		selectbg_check.set_active (false);
+		selectfg_check.set_active (false);
+		panelbg_check.set_active (false);
+		panelfg_check.set_active (false);
+		menubg_check.set_active (false);
+		menufg_check.set_active (false);
 
 		// Read the current values
 		var settings = new GLib.Settings ("org.gnome.desktop.interface");
@@ -209,22 +205,22 @@ class ThemePrefWindow : ApplicationWindow {
 					menufg_value = line.substring (28, line.length-29);
 				}
 				if ("/* selectbg-on */" in line) {
-					selectbg_switch.set_active (true);
+					selectbg_check.set_active (true);
 				}
 				if ("/* selectfg-on */" in line) {
-					selectfg_switch.set_active (true);
+					selectfg_check.set_active (true);
 				}
 				if ("/* panelbg-on */" in line) {
-					panelbg_switch.set_active (true);
+					panelbg_check.set_active (true);
 				}
 				if ("/* panelfg-on */" in line) {
-					panelfg_switch.set_active (true);
+					panelfg_check.set_active (true);
 				}
 				if ("/* menubg-on */" in line) {
-					menubg_switch.set_active (true);
+					menubg_check.set_active (true);
 				}
 				if ("/* menufg-on */" in line) {
-					menufg_switch.set_active (true);
+					menufg_check.set_active (true);
 				}
 			}
 		} catch (Error e) {
@@ -236,11 +232,11 @@ class ThemePrefWindow : ApplicationWindow {
 			string[] parts = color_scheme.split_set(";");
 			if ("selected_bg_color:#" in parts[0]) {
 				selectbg_value = parts[0].substring (18, parts[0].length-18);
-				selectbg_switch.set_active (true);
+				selectbg_check.set_active (true);
 			}
 			if ("selected_fg_color:#" in parts[1]) {
 				selectfg_value = parts[1].substring (18, parts[1].length-18);
-				selectfg_switch.set_active (true);
+				selectfg_check.set_active (true);
 			}
 		}
 
@@ -269,10 +265,6 @@ class ThemePrefWindow : ApplicationWindow {
 
 	void create_widgets () {
 		// Create and setup widgets
-		separator1 = new Separator (Gtk.Orientation.HORIZONTAL);
-		separator2 = new Separator (Gtk.Orientation.HORIZONTAL);
-		separator3 = new Separator (Gtk.Orientation.HORIZONTAL);
-
 		heading1 = new Label.with_mnemonic ("_<b>Selection colors</b>");
 		heading1.set_use_markup (true);
 		heading1.set_halign (Gtk.Align.START);
@@ -303,18 +295,18 @@ class ThemePrefWindow : ApplicationWindow {
 		menubg_button = new ColorButton ();
 		menufg_button = new ColorButton ();
 
-		selectbg_switch = new Switch ();
-		selectbg_switch.set_halign (Gtk.Align.END);
-		selectfg_switch = new Switch ();
-		selectfg_switch.set_halign (Gtk.Align.END);
-		panelbg_switch = new Switch ();
-		panelbg_switch.set_halign (Gtk.Align.END);
-		panelfg_switch = new Switch ();
-		panelfg_switch.set_halign (Gtk.Align.END);
-		menubg_switch = new Switch ();
-		menubg_switch.set_halign (Gtk.Align.END);
-		menufg_switch = new Switch ();
-		menufg_switch.set_halign (Gtk.Align.END);
+		selectbg_check = new CheckButton ();
+		selectbg_check.set_halign (Gtk.Align.END);
+		selectfg_check = new CheckButton ();
+		selectfg_check.set_halign (Gtk.Align.END);
+		panelbg_check = new CheckButton ();
+		panelbg_check.set_halign (Gtk.Align.END);
+		panelfg_check = new CheckButton ();
+		panelfg_check.set_halign (Gtk.Align.END);
+		menubg_check = new CheckButton ();
+		menubg_check.set_halign (Gtk.Align.END);
+		menufg_check = new CheckButton ();
+		menufg_check.set_halign (Gtk.Align.END);
 
 		apply_button = new Button.from_stock (Stock.APPLY);
 		reset_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
@@ -325,31 +317,27 @@ class ThemePrefWindow : ApplicationWindow {
 		grid.set_column_homogeneous (true);
 		grid.set_column_spacing (10);
 		grid.set_row_spacing (10);
-		grid.set_border_width (10);
 		grid.attach (heading1, 0, 0, 1, 1);
-		grid.attach_next_to (separator1, heading1, Gtk.PositionType.RIGHT, 2, 1);
-		grid.attach (selectbg_label, 0, 1, 1, 1);
-		grid.attach_next_to (selectbg_switch, selectbg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (selectbg_button, selectbg_switch, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach (selectfg_label, 0, 2, 1, 1);
-		grid.attach_next_to (selectfg_switch, selectfg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (selectfg_button, selectfg_switch, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach (selectbg_check, 0, 1, 1, 1);
+		grid.attach_next_to (selectbg_label, selectbg_check, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectbg_button, selectbg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach (selectfg_check, 0, 2, 1, 1);
+		grid.attach_next_to (selectfg_label, selectfg_check, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectfg_button, selectfg_label, Gtk.PositionType.RIGHT, 1, 1);
 		grid.attach (heading2, 0, 3, 1, 1);
-		grid.attach_next_to (separator2, heading2, Gtk.PositionType.RIGHT, 2, 1);
-		grid.attach (panelbg_label, 0, 4, 1, 1);
-		grid.attach_next_to (panelbg_switch, panelbg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (panelbg_button, panelbg_switch, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach (panelfg_label, 0, 5, 1, 1);
-		grid.attach_next_to (panelfg_switch, panelfg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (panelfg_button, panelfg_switch, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach (panelbg_check, 0, 4, 1, 1);
+		grid.attach_next_to (panelbg_label, panelbg_check, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelbg_button, panelbg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach (panelfg_check, 0, 5, 1, 1);
+		grid.attach_next_to (panelfg_label, panelfg_check, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelfg_button, panelfg_label, Gtk.PositionType.RIGHT, 1, 1);
 		grid.attach (heading3, 0, 6, 1, 1);
-		grid.attach_next_to (separator3, heading3, Gtk.PositionType.RIGHT, 2, 1);
-		grid.attach (menubg_label, 0, 7, 1, 1);
-		grid.attach_next_to (menubg_switch, menubg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (menubg_button, menubg_switch, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach (menufg_label, 0, 8, 1, 1);
-		grid.attach_next_to (menufg_switch, menufg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (menufg_button, menufg_switch, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach (menubg_check, 0, 7, 1, 1);
+		grid.attach_next_to (menubg_label, menubg_check, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menubg_button, menubg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach (menufg_check, 0, 8, 1, 1);
+		grid.attach_next_to (menufg_label, menufg_check, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menufg_button, menufg_label, Gtk.PositionType.RIGHT, 1, 1);
 		grid.attach (apply_button, 0, 9, 1, 1);
 		grid.attach_next_to (reset_button, apply_button, Gtk.PositionType.RIGHT, 1, 1);
 		grid.attach_next_to (close_button, reset_button, Gtk.PositionType.RIGHT, 1, 1);
@@ -384,22 +372,22 @@ class ThemePrefWindow : ApplicationWindow {
 			on_menufg_color_set ();
 			apply_button.set_sensitive (true);
 		});
-		selectbg_switch.notify["active"].connect (() => {
+		selectbg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
-		selectfg_switch.notify["active"].connect (() => {
+		selectfg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
-		panelbg_switch.notify["active"].connect (() => {
+		panelbg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
-		panelfg_switch.notify["active"].connect (() => {
+		panelfg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
-		menubg_switch.notify["active"].connect (() => {
+		menubg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
-		menufg_switch.notify["active"].connect (() => {
+		menufg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
 		apply_button.clicked.connect (() => {
@@ -478,32 +466,32 @@ class ThemePrefWindow : ApplicationWindow {
 
 	void set_vars () {
 		// Determine color scheme
-		if (selectbg_switch.get_active() && selectfg_switch.get_active()) {
+		if (selectbg_check.get_active() && selectfg_check.get_active()) {
 			color_scheme = "\"selected_bg_color:%s;selected_fg_color:%s;\"".printf (selectbg_value, selectfg_value);
-		} else if (selectbg_switch.get_active() && !selectfg_switch.get_active()) {
+		} else if (selectbg_check.get_active() && !selectfg_check.get_active()) {
 			color_scheme = "\"selected_bg_color:%s;\"".printf (selectbg_value);
-		} else if (!selectfg_switch.get_active() && selectfg_switch.get_active()) {
+		} else if (!selectfg_check.get_active() && selectfg_check.get_active()) {
 			color_scheme = "\"selected_fg_color:%s;\"".printf (selectfg_value);
 		} else {
 			color_scheme = "\"\"";
 		}
 		
 		// Determine states
-		if (selectbg_switch.get_active()) {
+		if (selectbg_check.get_active()) {
 			selectbg_state1 = "/* selectbg-on */";
 			selectbg_state2 = "/* selectbg-on */";
 		} else {
 			selectbg_state1 = "/* selectbg-off";
 			selectbg_state2 = "selectbg-off */";
 		}
-		if (selectfg_switch.get_active()) {
+		if (selectfg_check.get_active()) {
 			selectfg_state1 = "/* selectfg-on */";
 			selectfg_state2 = "/* selectfg-on */";
 		} else {
 			selectfg_state1 = "/* selectfg-off";
 			selectfg_state2 = "selectfg-off */";
 		}
-		if (panelbg_switch.get_active()) {
+		if (panelbg_check.get_active()) {
 			panelbg_state1 = "/* panelbg-on */";
 			panelbg_state2 = "/* panelbg-on */";
 			panelbg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")".printf(panelbg_value, panelbg_value, panelbg_value, panelbg_value);
@@ -512,7 +500,7 @@ class ThemePrefWindow : ApplicationWindow {
 			panelbg_state2 = "panelbg-off */";
 			panelbg_gtk2 = "";
 		}
-		if (panelfg_switch.get_active()) {
+		if (panelfg_check.get_active()) {
 			panelfg_state1 = "/* panelfg-on */";
 			panelfg_state2 = "/* panelfg-on */";
 			panelfg_gtk2 = "fg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"".printf(panelfg_value, panelfg_value, panelfg_value, panelfg_value);
@@ -521,7 +509,7 @@ class ThemePrefWindow : ApplicationWindow {
 			panelfg_state2 = "panelfg-off */";
 			panelfg_gtk2 = "";
 		}
-		if (menubg_switch.get_active()) {
+		if (menubg_check.get_active()) {
 			menubg_state1 = "/* menubg-on */";
 			menubg_state2 = "/* menubg-on */";
 			menubg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"".printf(menubg_value, menubg_value, menubg_value);
@@ -530,7 +518,7 @@ class ThemePrefWindow : ApplicationWindow {
 			menubg_state2 = "menubg-off */";;
 			menubg_gtk2 = "";
 		}
-		if (menufg_switch.get_active()) {
+		if (menufg_check.get_active()) {
 			menufg_state1 = "/* menufg-on */";
 			menufg_state2 = "/* menufg-on */";
 			menufg_gtk2 = "fg[NORMAL]=\"%s\"".printf(menufg_value);
