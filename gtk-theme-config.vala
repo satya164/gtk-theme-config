@@ -275,17 +275,17 @@ class ThemePrefWindow : ApplicationWindow {
 		heading3.set_use_markup (true);
 		heading3.set_halign (Gtk.Align.START);
 
-		selectbg_label = new Label.with_mnemonic ("_Selection background");
+		selectbg_label = new Label.with_mnemonic ("_Custom selection background");
 		selectbg_label.set_halign (Gtk.Align.START);
-		selectfg_label = new Label.with_mnemonic ("_Selection text");
+		selectfg_label = new Label.with_mnemonic ("_Custom selection text");
 		selectfg_label.set_halign (Gtk.Align.START);
-		panelbg_label = new Label.with_mnemonic ("_Panel background");
+		panelbg_label = new Label.with_mnemonic ("_Custom panel background");
 		panelbg_label.set_halign (Gtk.Align.START);
-		panelfg_label = new Label.with_mnemonic ("_Panel text");
+		panelfg_label = new Label.with_mnemonic ("_Custom panel text");
 		panelfg_label.set_halign (Gtk.Align.START);
-		menubg_label = new Label.with_mnemonic ("_Menu background");
+		menubg_label = new Label.with_mnemonic ("_Custom menu background");
 		menubg_label.set_halign (Gtk.Align.START);
-		menufg_label = new Label.with_mnemonic ("_Menu text");
+		menufg_label = new Label.with_mnemonic ("_Custom menu text");
 		menufg_label.set_halign (Gtk.Align.START);
 
 		selectbg_button = new ColorButton ();
@@ -312,35 +312,40 @@ class ThemePrefWindow : ApplicationWindow {
 		reset_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
 		close_button = new Button.from_stock (Stock.CLOSE);
 
+		// Buttons
+		var buttons = new Box (Gtk.Orientation.HORIZONTAL, 10);
+		buttons.set_homogeneous (true);
+		buttons.add (apply_button);
+		buttons.add (reset_button);
+		buttons.add (close_button);
+
 		// Layout widgets
 		var grid = new Grid ();
-		grid.set_column_homogeneous (true);
+		grid.set_column_homogeneous (false);
 		grid.set_column_spacing (10);
 		grid.set_row_spacing (10);
-		grid.attach (heading1, 0, 0, 1, 1);
+		grid.attach (heading1, 0, 0, 4, 1);
 		grid.attach (selectbg_check, 0, 1, 1, 1);
 		grid.attach_next_to (selectbg_label, selectbg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (selectbg_button, selectbg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectbg_button, selectbg_label, Gtk.PositionType.RIGHT, 2, 1);
 		grid.attach (selectfg_check, 0, 2, 1, 1);
 		grid.attach_next_to (selectfg_label, selectfg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (selectfg_button, selectfg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach (heading2, 0, 3, 1, 1);
+		grid.attach_next_to (selectfg_button, selectfg_label, Gtk.PositionType.RIGHT, 2, 1);
+		grid.attach (heading2, 0, 3, 4, 1);
 		grid.attach (panelbg_check, 0, 4, 1, 1);
 		grid.attach_next_to (panelbg_label, panelbg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (panelbg_button, panelbg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelbg_button, panelbg_label, Gtk.PositionType.RIGHT, 2, 1);
 		grid.attach (panelfg_check, 0, 5, 1, 1);
 		grid.attach_next_to (panelfg_label, panelfg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (panelfg_button, panelfg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach (heading3, 0, 6, 1, 1);
+		grid.attach_next_to (panelfg_button, panelfg_label, Gtk.PositionType.RIGHT, 2, 1);
+		grid.attach (heading3, 0, 6, 4, 1);
 		grid.attach (menubg_check, 0, 7, 1, 1);
 		grid.attach_next_to (menubg_label, menubg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (menubg_button, menubg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menubg_button, menubg_label, Gtk.PositionType.RIGHT, 2, 1);
 		grid.attach (menufg_check, 0, 8, 1, 1);
 		grid.attach_next_to (menufg_label, menufg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (menufg_button, menufg_label, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach (apply_button, 0, 9, 1, 1);
-		grid.attach_next_to (reset_button, apply_button, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (close_button, reset_button, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menufg_button, menufg_label, Gtk.PositionType.RIGHT, 2, 1);
+		grid.attach (buttons, 0, 9, 4, 1);
 
 		this.add (grid);
 
