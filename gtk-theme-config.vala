@@ -50,6 +50,10 @@ class ThemePrefWindow : ApplicationWindow {
 
 	File theme_path;
 
+	File gtk3_key_file;
+
+	KeyFile key_file;
+
 	string color_hex;
 
 	string color_scheme;
@@ -157,6 +161,8 @@ class ThemePrefWindow : ApplicationWindow {
 		gtk2_config_file = home_dir.get_child (".gtkrc-2.0");
 		gtk2_saved_file = home_dir.get_child (".gtkrc-2.0.saved");
 
+		gtk3_key_file = config_dir.get_child ("gtk-3.0").get_child ("settings.ini");
+
 		// Create path if doesn't exist
 		if (!gtk3_config_file.get_parent().query_exists ()) {
 			try {
@@ -227,11 +233,22 @@ class ThemePrefWindow : ApplicationWindow {
 			stderr.printf ("Could not read user theme: %s\n", e.message);
 		}
 
+		// Read the KeyFile
+		key_file = new KeyFile ();
+
+		try {
+			key_file.load_from_file (gtk3_key_file.get_path(), KeyFileFlags.NONE);
+
+			color_scheme = key_file.get_string ("Settings", "gtk-color-scheme");
+		} catch (Error e) {
+			stderr.printf ("Could not get color scheme from key file: %s\n", e.message);
+		}
+
 		// Read the current color scheme
 		if (";" in color_scheme) {
 			string[] parts = color_scheme.split_set(";");
 			if ("selected_bg_color:#" in parts[0]) {
-				selectbg_value = parts[0].substring (18, parts[0].length-18);
+				selectbg_value = parts[0].substring (19, parts[0].length-19);
 				selectbg_check.set_active (true);
 			}
 			if ("selected_fg_color:#" in parts[1]) {
@@ -454,17 +471,19 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	void on_config_set () {
-		reset_config ();
 		reset_color_scheme ();
+		reset_config ();
 		set_vars ();
-		write_config ();
 		set_color_scheme ();
+		write_key ();
+		write_config ();
 		notify_change ();
 	}
 
 	void on_config_reset () {
-		reset_config ();
 		reset_color_scheme ();
+		reset_config ();
+		write_key ();
 		set_values ();
 		notify_change ();
 	}
@@ -550,6 +569,8 @@ class ThemePrefWindow : ApplicationWindow {
 		} catch (Error e) {
 			stderr.printf ("Could not set color scheme for xfce: %s\n", e.message);
 		}
+
+		key_file.set_string ("Settings", "gtk-color-scheme", color_scheme);
 	}
 
 	void reset_color_scheme () {
@@ -567,6 +588,12 @@ class ThemePrefWindow : ApplicationWindow {
 			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
 		} catch (Error e) {
 			stderr.printf ("Could not reset color scheme for xfce: %s\n", e.message);
+		}
+
+		try {
+			key_file.remove_key ("Settings", "gtk-color-scheme");
+		} catch (Error e) {
+			stderr.printf ("Could not reset color scheme in key file: %s\n", e.message);
 		}
 	}
 			
@@ -598,6 +625,23 @@ class ThemePrefWindow : ApplicationWindow {
 			}
 		} catch (Error e) {
 			stderr.printf ("Could not delete previous gtk2 configuration: %s\n", e.message);
+		}
+		try {
+			if (gtk3_key_file.query_exists ()) {
+				gtk3_key_file.delete ();
+			}
+		} catch (Error e) {
+			stderr.printf ("Could not delete previous keyfile: %s\n", e.message);
+		}
+	}
+
+	void write_key() {
+		try {
+			string keyfile_str = key_file.to_data ();
+			var dos = new DataOutputStream (gtk3_key_file.create (FileCreateFlags.REPLACE_DESTINATION));
+			dos.put_string (keyfile_str);
+		} catch (Error e) {
+			stderr.printf ("Could not write key file: %s\n", e.message);
 		}
 	}
 
