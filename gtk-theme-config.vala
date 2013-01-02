@@ -1,16 +1,6 @@
 using Gtk;
 
 class ThemePrefWindow : ApplicationWindow {
-	Label heading1;
-	Label heading2;
-	Label heading3;
-
-	Label selectbg_label;
-	Label selectfg_label;
-	Label panelbg_label;
-	Label panelfg_label;
-	Label menubg_label;
-	Label menufg_label;
 
 	ColorButton selectbg_button;
 	ColorButton selectfg_button;
@@ -27,7 +17,7 @@ class ThemePrefWindow : ApplicationWindow {
 	CheckButton menufg_check;
 
 	Button apply_button;
-	Button reset_button;
+	Button revert_button;
 	Button close_button;
 
 	Gdk.RGBA selectbg;
@@ -115,7 +105,7 @@ class ThemePrefWindow : ApplicationWindow {
 	void show_about (SimpleAction simple, Variant? parameter) {
 		string license = "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with This program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA";
 
-		Gtk.show_about_dialog (this,
+		show_about_dialog (this,
 			"program-name", ("GTK theme preferences"),
 			"copyright", ("Copyright \xc2\xa9 2012 Satyajit Sahoo"),
 			"comments", ("A tool to configure the GTK theme"),
@@ -282,28 +272,28 @@ class ThemePrefWindow : ApplicationWindow {
 
 	void create_widgets () {
 		// Create and setup widgets
-		heading1 = new Label.with_mnemonic ("_<b>Selection colors</b>");
+		var heading1 = new Label.with_mnemonic ("_<b>Selection colors</b>");
 		heading1.set_use_markup (true);
-		heading1.set_halign (Gtk.Align.START);
-		heading2 = new Label.with_mnemonic ("_<b>Panel colors</b>");
+		heading1.set_halign (Align.START);
+		var heading2 = new Label.with_mnemonic ("_<b>Panel colors</b>");
 		heading2.set_use_markup (true);
-		heading2.set_halign (Gtk.Align.START);
-		heading3 = new Label.with_mnemonic ("_<b>Menu colors</b>");
+		heading2.set_halign (Align.START);
+		var heading3 = new Label.with_mnemonic ("_<b>Menu colors</b>");
 		heading3.set_use_markup (true);
-		heading3.set_halign (Gtk.Align.START);
+		heading3.set_halign (Align.START);
 
-		selectbg_label = new Label.with_mnemonic ("_Custom selection background");
-		selectbg_label.set_halign (Gtk.Align.START);
-		selectfg_label = new Label.with_mnemonic ("_Custom selection text");
-		selectfg_label.set_halign (Gtk.Align.START);
-		panelbg_label = new Label.with_mnemonic ("_Custom panel background");
-		panelbg_label.set_halign (Gtk.Align.START);
-		panelfg_label = new Label.with_mnemonic ("_Custom panel text");
-		panelfg_label.set_halign (Gtk.Align.START);
-		menubg_label = new Label.with_mnemonic ("_Custom menu background");
-		menubg_label.set_halign (Gtk.Align.START);
-		menufg_label = new Label.with_mnemonic ("_Custom menu text");
-		menufg_label.set_halign (Gtk.Align.START);
+		var selectbg_label = new Label.with_mnemonic ("_Custom selection background");
+		selectbg_label.set_halign (Align.START);
+		var selectfg_label = new Label.with_mnemonic ("_Custom selection text");
+		selectfg_label.set_halign (Align.START);
+		var panelbg_label = new Label.with_mnemonic ("_Custom panel background");
+		panelbg_label.set_halign (Align.START);
+		var panelfg_label = new Label.with_mnemonic ("_Custom panel text");
+		panelfg_label.set_halign (Align.START);
+		var menubg_label = new Label.with_mnemonic ("_Custom menu background");
+		menubg_label.set_halign (Align.START);
+		var menufg_label = new Label.with_mnemonic ("_Custom menu text");
+		menufg_label.set_halign (Align.START);
 
 		selectbg_button = new ColorButton ();
 		selectfg_button = new ColorButton ();
@@ -313,28 +303,26 @@ class ThemePrefWindow : ApplicationWindow {
 		menufg_button = new ColorButton ();
 
 		selectbg_check = new CheckButton ();
-		selectbg_check.set_halign (Gtk.Align.END);
+		selectbg_check.set_halign (Align.END);
 		selectfg_check = new CheckButton ();
-		selectfg_check.set_halign (Gtk.Align.END);
+		selectfg_check.set_halign (Align.END);
 		panelbg_check = new CheckButton ();
-		panelbg_check.set_halign (Gtk.Align.END);
+		panelbg_check.set_halign (Align.END);
 		panelfg_check = new CheckButton ();
-		panelfg_check.set_halign (Gtk.Align.END);
+		panelfg_check.set_halign (Align.END);
 		menubg_check = new CheckButton ();
-		menubg_check.set_halign (Gtk.Align.END);
+		menubg_check.set_halign (Align.END);
 		menufg_check = new CheckButton ();
-		menufg_check.set_halign (Gtk.Align.END);
+		menufg_check.set_halign (Align.END);
 
 		apply_button = new Button.from_stock (Stock.APPLY);
-		reset_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
-		close_button = new Button.from_stock (Stock.CLOSE);
+		revert_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
 
 		// Buttons
-		var buttons = new Box (Gtk.Orientation.HORIZONTAL, 5);
-		buttons.set_homogeneous (true);
+		var buttons = new ButtonBox (Orientation.HORIZONTAL);
+		buttons.set_layout (ButtonBoxStyle.EDGE);
 		buttons.add (apply_button);
-		buttons.add (reset_button);
-		buttons.add (close_button);
+		buttons.add (revert_button);
 
 		// Layout widgets
 		var grid = new Grid ();
@@ -343,25 +331,25 @@ class ThemePrefWindow : ApplicationWindow {
 		grid.set_row_spacing (5);
 		grid.attach (heading1, 0, 0, 3, 1);
 		grid.attach (selectbg_check, 0, 1, 1, 1);
-		grid.attach_next_to (selectbg_label, selectbg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (selectbg_button, selectbg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectbg_label, selectbg_check, PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectbg_button, selectbg_label, PositionType.RIGHT, 1, 1);
 		grid.attach (selectfg_check, 0, 2, 1, 1);
-		grid.attach_next_to (selectfg_label, selectfg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (selectfg_button, selectfg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectfg_label, selectfg_check, PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (selectfg_button, selectfg_label, PositionType.RIGHT, 1, 1);
 		grid.attach (heading2, 0, 3, 3, 1);
 		grid.attach (panelbg_check, 0, 4, 1, 1);
-		grid.attach_next_to (panelbg_label, panelbg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (panelbg_button, panelbg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelbg_label, panelbg_check, PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelbg_button, panelbg_label, PositionType.RIGHT, 1, 1);
 		grid.attach (panelfg_check, 0, 5, 1, 1);
-		grid.attach_next_to (panelfg_label, panelfg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (panelfg_button, panelfg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelfg_label, panelfg_check, PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (panelfg_button, panelfg_label, PositionType.RIGHT, 1, 1);
 		grid.attach (heading3, 0, 6, 3, 1);
 		grid.attach (menubg_check, 0, 7, 1, 1);
-		grid.attach_next_to (menubg_label, menubg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (menubg_button, menubg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menubg_label, menubg_check, PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menubg_button, menubg_label, PositionType.RIGHT, 1, 1);
 		grid.attach (menufg_check, 0, 8, 1, 1);
-		grid.attach_next_to (menufg_label, menufg_check, Gtk.PositionType.RIGHT, 1, 1);
-		grid.attach_next_to (menufg_button, menufg_label, Gtk.PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menufg_label, menufg_check, PositionType.RIGHT, 1, 1);
+		grid.attach_next_to (menufg_button, menufg_label, PositionType.RIGHT, 1, 1);
 		grid.attach (buttons, 0, 9, 4, 1);
 
 		this.add (grid);
@@ -415,11 +403,11 @@ class ThemePrefWindow : ApplicationWindow {
 		apply_button.clicked.connect (() => {
 			on_config_set ();
 			apply_button.set_sensitive (false);
-			reset_button.set_sensitive (true);
+			revert_button.set_sensitive (true);
 		});
-		reset_button.clicked.connect (() => {
+		revert_button.clicked.connect (() => {
 			on_config_reset ();
-			reset_button.set_sensitive (false);
+			revert_button.set_sensitive (false);
 		});
 		close_button.clicked.connect (() => {
 			destroy ();
