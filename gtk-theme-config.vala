@@ -83,7 +83,7 @@ class ThemePrefWindow : ApplicationWindow {
 
 		// Set window icon
 		try {
-			this.icon = IconTheme.get_default ().load_icon ("preferences-desktop-theme", 48, 0);
+			this.icon = IconTheme.get_default ().load_icon ("gtk-theme-config", 48, 0);
 		} catch (Error e) {
 			stderr.printf ("Could not load application icon: %s\n", e.message);
 		}
@@ -662,7 +662,7 @@ class ThemePrefWindow : ApplicationWindow {
 
 	void notify_change() {
 		try {
-			Process.spawn_command_line_sync("notify-send -h int:transient:1 -i \"preferences-desktop-theme\" \"Changes applied.\" \"You might need to restart running applications.\"");
+			Process.spawn_command_line_sync("notify-send -h int:transient:1 -i \"gtk-theme-config\" \"Changes applied.\" \"You might need to restart running applications.\"");
 		} catch (Error e) {
 			stderr.printf ("%s", e.message);
 		}

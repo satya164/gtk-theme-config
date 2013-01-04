@@ -3,6 +3,7 @@ CFLAGS=--pkg gtk+-3.0
 LDFLAGS=-X -lm
 SOURCE=gtk-theme-config.vala
 BINARY=gtk-theme-config
+ICON=gtk-theme-config.svg
 DESKTOPFILE=gtk-theme-config.desktop
 CLEAN=rm -f
 INSTALL=install
@@ -19,9 +20,11 @@ clean:
 
 install: all
 	$(INSTALL_PROGRAM) $(BINARY) $(DESTDIR)/usr/bin/$(BINARY)
+	$(INSTALL_DATA) $(ICON) $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/$(ICON)
 	$(INSTALL_DATA) $(DESKTOPFILE) $(DESTDIR)/usr/share/applications/$(DESKTOPFILE)
 
 uninstall:
 	$(CLEAN) $(DESTDIR)/usr/bin/$(BINARY)
+	$(CLEAN) $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/$(ICON)
 	$(CLEAN) $(DESTDIR)/usr/share/applications/$(DESKTOPFILE)
 

@@ -5,5 +5,5 @@ Comment=A tool to configure the GTK theme
 Exec=gtk-theme-config
 Terminal=false
 Type=Application
-Icon=preferences-desktop-theme
+Icon=gtk-theme-config
 Categories=GNOME;Settings
