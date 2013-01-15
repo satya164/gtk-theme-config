@@ -16,8 +16,8 @@ class ThemePrefWindow : ApplicationWindow {
 	CheckButton menubg_check;
 	CheckButton menufg_check;
 
-	Button apply_button;
 	Button revert_button;
+	Button apply_button;
 	Button close_button;
 
 	Gdk.RGBA selectbg;
@@ -315,14 +315,14 @@ class ThemePrefWindow : ApplicationWindow {
 		menufg_check = new CheckButton ();
 		menufg_check.set_halign (Align.END);
 
-		apply_button = new Button.from_stock (Stock.APPLY);
 		revert_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
+		apply_button = new Button.from_stock (Stock.APPLY);
 
 		// Buttons
 		var buttons = new ButtonBox (Orientation.HORIZONTAL);
 		buttons.set_layout (ButtonBoxStyle.EDGE);
-		buttons.add (apply_button);
 		buttons.add (revert_button);
+		buttons.add (apply_button);
 
 		// Layout widgets
 		var grid = new Grid ();
@@ -400,14 +400,14 @@ class ThemePrefWindow : ApplicationWindow {
 		menufg_check.notify["active"].connect (() => {
 			apply_button.set_sensitive (true);
 		});
+		revert_button.clicked.connect (() => {
+			on_config_reset ();
+			revert_button.set_sensitive (false);
+		});
 		apply_button.clicked.connect (() => {
 			on_config_set ();
 			apply_button.set_sensitive (false);
 			revert_button.set_sensitive (true);
-		});
-		revert_button.clicked.connect (() => {
-			on_config_reset ();
-			revert_button.set_sensitive (false);
 		});
 		close_button.clicked.connect (() => {
 			destroy ();
