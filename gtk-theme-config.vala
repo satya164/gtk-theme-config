@@ -18,7 +18,6 @@ class ThemePrefWindow : ApplicationWindow {
 
 	Button revert_button;
 	Button apply_button;
-	Button close_button;
 
 	Gdk.RGBA selectbg;
 	Gdk.RGBA selectfg;
@@ -364,9 +363,6 @@ class ThemePrefWindow : ApplicationWindow {
 			on_config_set ();
 			apply_button.set_sensitive (false);
 			revert_button.set_sensitive (true);
-		});
-		close_button.clicked.connect (() => {
-			destroy ();
 		});
 	}
 
