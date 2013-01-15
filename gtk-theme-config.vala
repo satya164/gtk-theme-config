@@ -88,36 +88,9 @@ class ThemePrefWindow : ApplicationWindow {
 			stderr.printf ("Could not load application icon: %s\n", e.message);
 		}
 
-		// GMenu
-		var about_action = new SimpleAction ("about", null);
-		about_action.activate.connect (this.show_about);
-		this.add_action (about_action);
-
-		var quit_action = new SimpleAction ("quit", null);
-		quit_action.activate.connect (this.quit_window);
-		this.add_action (quit_action);
-
 		// Methods
 		create_widgets ();
 		connect_signals ();
-	}
-
-	void show_about (SimpleAction simple, Variant? parameter) {
-		string license = "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with This program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA";
-
-		show_about_dialog (this,
-			"program-name", ("GTK theme preferences"),
-			"copyright", ("Copyright \xc2\xa9 2012 Satyajit Sahoo"),
-			"comments", ("A tool to configure the GTK theme"),
-			"license", license,
-			"wrap-license", true,
-			"website", "http://github.com/satya164/gtk-theme-config",
-			"website-label", ("GTK theme preferences on GitHub"),
-			null);
-	}
-
-	void quit_window () {
-		destroy ();
 	}
 
 	void set_values () {
@@ -677,15 +650,6 @@ class ThemePrefApp : Gtk.Application {
 	protected override void activate () {
 		var window = new ThemePrefWindow (this);
 		window.show_all ();
-	}
-
-	protected override void startup () {
-		base.startup ();
-
-		var menu = new GLib.Menu ();
-		menu.append ("About", "win.about");
-		menu.append ("Quit", "win.quit");
-		this.app_menu = menu;
 	}
 }
 
