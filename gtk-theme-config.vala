@@ -1,6 +1,8 @@
 using Gtk;
 
-class ThemePrefWindow : ApplicationWindow {
+class ThemeConfigWindow : ApplicationWindow {
+	Label selectbg_label;
+	Label selectfg_label;
 
 	ColorButton selectbg_button;
 	ColorButton selectfg_button;
@@ -18,13 +20,6 @@ class ThemePrefWindow : ApplicationWindow {
 
 	Button revert_button;
 	Button apply_button;
-
-	Gdk.RGBA selectbg;
-	Gdk.RGBA selectfg;
-	Gdk.RGBA panelbg;
-	Gdk.RGBA panelfg;
-	Gdk.RGBA menubg;
-	Gdk.RGBA menufg;
 
 	Gdk.RGBA color_rgb;
 
@@ -68,8 +63,8 @@ class ThemePrefWindow : ApplicationWindow {
 	string menubg_gtk2;
 	string menufg_gtk2;
 
-	internal ThemePrefWindow (ThemePrefApp app) {
-		Object (application: app, title: "GTK theme preferences");
+	internal ThemeConfigWindow (ThemeConfigApp app) {
+		Object (application: app, title: "Configure GTK theme");
 
 		// Set window properties
 		this.window_position = WindowPosition.CENTER;
@@ -97,6 +92,7 @@ class ThemePrefWindow : ApplicationWindow {
 		panelfg_value = "#333333";
 		menubg_value = "#eeeeee";
 		menufg_value = "#333333";
+
 		selectbg_check.set_active (false);
 		selectfg_check.set_active (false);
 		panelbg_check.set_active (false);
@@ -193,7 +189,7 @@ class ThemePrefWindow : ApplicationWindow {
 		if (";" in color_scheme) {
 			string[] parts = color_scheme.split_set(";");
 			if ("selected_bg_color:#" in parts[0]) {
-				selectbg_value = parts[0].substring (19, parts[0].length-19);
+				selectbg_value = parts[0].substring (18, parts[0].length-18);
 				selectbg_check.set_active (true);
 			}
 			if ("selected_fg_color:#" in parts[1]) {
@@ -203,24 +199,28 @@ class ThemePrefWindow : ApplicationWindow {
 		}
 
 		// Set colors
-		selectbg = Gdk.RGBA ();
-		selectbg.parse ("%s".printf (selectbg_value));
-		selectbg_button.set_rgba (selectbg);
-		selectfg = Gdk.RGBA ();
-		selectfg.parse ("%s".printf (selectfg_value));
-		selectfg_button.set_rgba (selectfg);
-		panelbg = Gdk.RGBA ();
-		panelbg.parse ("%s".printf (panelbg_value));
-		panelbg_button.set_rgba (panelbg);
-		panelfg = Gdk.RGBA ();
-		panelfg.parse ("%s".printf (panelfg_value));
-		panelfg_button.set_rgba (panelfg);
-		menubg = Gdk.RGBA ();
-		menubg.parse ("%s".printf (menubg_value));
-		menubg_button.set_rgba (menubg);
-		menufg = Gdk.RGBA ();
-		menufg.parse ("%s".printf (menufg_value));
-		menufg_button.set_rgba (menufg);
+		Gdk.RGBA color = Gdk.RGBA ();
+		color.parse ("%s".printf (selectbg_value));
+		selectbg_button.set_rgba (color);
+		color.parse ("%s".printf (selectfg_value));
+		selectfg_button.set_rgba (color);
+		color.parse ("%s".printf (panelbg_value));
+		panelbg_button.set_rgba (color);
+		color.parse ("%s".printf (panelfg_value));
+		panelfg_button.set_rgba (color);
+		color.parse ("%s".printf (menubg_value));
+		menubg_button.set_rgba (color);
+		color.parse ("%s".printf (menufg_value));
+		menufg_button.set_rgba (color);
+
+		if (home_dir.get_child (".themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () || File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists ()) {
+			selectbg_label.set_sensitive (false);
+			selectfg_label.set_sensitive (false);
+			selectbg_button.set_sensitive (false);
+			selectfg_button.set_sensitive (false);
+			selectbg_check.set_sensitive (false);
+			selectfg_check.set_sensitive (false);
+		}
 
 		apply_button.set_sensitive (false);
 	}
@@ -237,9 +237,9 @@ class ThemePrefWindow : ApplicationWindow {
 		heading3.set_use_markup (true);
 		heading3.set_halign (Align.START);
 
-		var selectbg_label = new Label.with_mnemonic ("_Custom selection background");
+		selectbg_label = new Label.with_mnemonic ("_Custom selection background");
 		selectbg_label.set_halign (Align.START);
-		var selectfg_label = new Label.with_mnemonic ("_Custom selection text");
+		selectfg_label = new Label.with_mnemonic ("_Custom selection text");
 		selectfg_label.set_halign (Align.START);
 		var panelbg_label = new Label.with_mnemonic ("_Custom panel background");
 		panelbg_label.set_halign (Align.START);
@@ -413,7 +413,6 @@ class ThemePrefWindow : ApplicationWindow {
 	void on_config_set () {
 		reset_color_scheme ();
 		reset_config ();
-		set_vars ();
 		set_color_scheme ();
 		write_config ();
 		notify_change ();
@@ -426,7 +425,7 @@ class ThemePrefWindow : ApplicationWindow {
 		notify_change ();
 	}
 
-	void set_vars () {
+	void set_color_scheme () {
 		// Determine color scheme
 		if (selectbg_check.get_active() && selectfg_check.get_active()) {
 			color_scheme = "\"selected_bg_color:%s;selected_fg_color:%s;\"".printf (selectbg_value, selectfg_value);
@@ -437,61 +436,8 @@ class ThemePrefWindow : ApplicationWindow {
 		} else {
 			color_scheme = "\"\"";
 		}
-		
-		// Determine states
-		if (selectbg_check.get_active()) {
-			selectbg_state1 = "/* selectbg-on */";
-			selectbg_state2 = "/* selectbg-on */";
-		} else {
-			selectbg_state1 = "/* selectbg-off";
-			selectbg_state2 = "selectbg-off */";
-		}
-		if (selectfg_check.get_active()) {
-			selectfg_state1 = "/* selectfg-on */";
-			selectfg_state2 = "/* selectfg-on */";
-		} else {
-			selectfg_state1 = "/* selectfg-off";
-			selectfg_state2 = "selectfg-off */";
-		}
-		if (panelbg_check.get_active()) {
-			panelbg_state1 = "/* panelbg-on */";
-			panelbg_state2 = "/* panelbg-on */";
-			panelbg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")".printf(panelbg_value, panelbg_value, panelbg_value, panelbg_value);
-		} else {
-			panelbg_state1 = "/* panelbg-off";
-			panelbg_state2 = "panelbg-off */";
-			panelbg_gtk2 = "";
-		}
-		if (panelfg_check.get_active()) {
-			panelfg_state1 = "/* panelfg-on */";
-			panelfg_state2 = "/* panelfg-on */";
-			panelfg_gtk2 = "fg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"".printf(panelfg_value, panelfg_value, panelfg_value, panelfg_value);
-		} else {
-			panelfg_state1 = "/* panelfg-off";
-			panelfg_state2 = "panelfg-off */";
-			panelfg_gtk2 = "";
-		}
-		if (menubg_check.get_active()) {
-			menubg_state1 = "/* menubg-on */";
-			menubg_state2 = "/* menubg-on */";
-			menubg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"".printf(menubg_value, menubg_value, menubg_value);
-		} else {
-			menubg_state1 = "/* menubg-off";
-			menubg_state2 = "menubg-off */";;
-			menubg_gtk2 = "";
-		}
-		if (menufg_check.get_active()) {
-			menufg_state1 = "/* menufg-on */";
-			menufg_state2 = "/* menufg-on */";
-			menufg_gtk2 = "fg[NORMAL]=\"%s\"".printf(menufg_value);
-		} else {
-			menufg_state1 = "/* menufg-off";
-			menufg_state2 = "menufg-off */";
-			menufg_gtk2 = "";
-		}
-	}
 
-	void set_color_scheme () {
+		// Set color scheme
 		try {
 			Process.spawn_command_line_sync ("gsettings set org.gnome.desktop.interface gtk-color-scheme %s".printf (color_scheme));
 		} catch (Error e) {
@@ -559,6 +505,60 @@ class ThemePrefWindow : ApplicationWindow {
 	}
 
 	void write_config () {
+		
+		// Determine states
+		if (selectbg_check.get_active()) {
+			selectbg_state1 = "/* selectbg-on */";
+			selectbg_state2 = "/* selectbg-on */";
+		} else {
+			selectbg_state1 = "/* selectbg-off";
+			selectbg_state2 = "selectbg-off */";
+		}
+		if (selectfg_check.get_active()) {
+			selectfg_state1 = "/* selectfg-on */";
+			selectfg_state2 = "/* selectfg-on */";
+		} else {
+			selectfg_state1 = "/* selectfg-off";
+			selectfg_state2 = "selectfg-off */";
+		}
+		if (panelbg_check.get_active()) {
+			panelbg_state1 = "/* panelbg-on */";
+			panelbg_state2 = "/* panelbg-on */";
+			panelbg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")".printf(panelbg_value, panelbg_value, panelbg_value, panelbg_value);
+		} else {
+			panelbg_state1 = "/* panelbg-off";
+			panelbg_state2 = "panelbg-off */";
+			panelbg_gtk2 = "";
+		}
+		if (panelfg_check.get_active()) {
+			panelfg_state1 = "/* panelfg-on */";
+			panelfg_state2 = "/* panelfg-on */";
+			panelfg_gtk2 = "fg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"".printf(panelfg_value, panelfg_value, panelfg_value, panelfg_value);
+		} else {
+			panelfg_state1 = "/* panelfg-off";
+			panelfg_state2 = "panelfg-off */";
+			panelfg_gtk2 = "";
+		}
+		if (menubg_check.get_active()) {
+			menubg_state1 = "/* menubg-on */";
+			menubg_state2 = "/* menubg-on */";
+			menubg_gtk2 = "bg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"".printf(menubg_value, menubg_value, menubg_value);
+		} else {
+			menubg_state1 = "/* menubg-off";
+			menubg_state2 = "menubg-off */";;
+			menubg_gtk2 = "";
+		}
+		if (menufg_check.get_active()) {
+			menufg_state1 = "/* menufg-on */";
+			menufg_state2 = "/* menufg-on */";
+			menufg_gtk2 = "fg[NORMAL]=\"%s\"".printf(menufg_value);
+		} else {
+			menufg_state1 = "/* menufg-off";
+			menufg_state2 = "menufg-off */";
+			menufg_gtk2 = "";
+		}
+
+		// Write config
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
@@ -587,24 +587,24 @@ class ThemePrefWindow : ApplicationWindow {
 
 	void notify_change() {
 		try {
-			Process.spawn_command_line_sync("notify-send -h int:transient:1 -i \"gtk-theme-config\" \"Changes applied.\" \"You might need to restart running applications.\"");
+			Process.spawn_command_line_async("notify-send -h int:transient:1 -i \"gtk-theme-config\" \"Changes applied.\" \"You might need to restart running applications.\"");
 		} catch (Error e) {
 			stderr.printf ("%s", e.message);
 		}
 	}
 }
 
-class ThemePrefApp : Gtk.Application {
-	internal ThemePrefApp () {
-		Object (application_id: "org.themepref.app");
+class ThemeConfigApp : Gtk.Application {
+	internal ThemeConfigApp () {
+		Object (application_id: "org.themeconfig.app");
 	}
 
 	protected override void activate () {
-		var window = new ThemePrefWindow (this);
+		var window = new ThemeConfigWindow (this);
 		window.show_all ();
 	}
 }
 
 int main (string[] args) {
-	return new ThemePrefApp ().run (args);
+	return new ThemeConfigApp ().run (args);
 }
