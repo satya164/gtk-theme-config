@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=GTK theme preferences
+Name=Configure GTK theme
 GenericName=Configure GTK theme
 Comment=A tool to configure the GTK theme
 Exec=gtk-theme-config
 Terminal=false
 Type=Application
 Icon=gtk-theme-config
-Categories=GNOME;Settings;X-XFCE-SettingsDialog;X-XFCE-PersonalSettings;
+Categories=GNOME;Settings;Utility;X-XFCE-SettingsDialog;X-XFCE-PersonalSettings;

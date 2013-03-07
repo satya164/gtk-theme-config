@@ -1,11 +1,11 @@
-GTK theme preferences
+Configure GTK theme
 =====================
 
 A tool to configure the GTK theme.
 
 ### Introduction
 
-GTK theme preferences allows anyone to change some basic elements of a GTK theme easily (both GTK2 and GTK3) with a simple interface.
+This little tool allows anyone to change some basic elements of a GTK theme easily (both GTK2 and GTK3) with a simple interface.
 
 ### License
 
