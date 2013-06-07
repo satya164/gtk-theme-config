@@ -39,16 +39,6 @@ class ThemeConfigWindow : ApplicationWindow {
 	string menubg_value;
 	string menufg_value;
 
-	string select_state1;
-	string select_state2;
-	string panel_state1;
-	string panel_state2;
-	string menu_state1;
-	string menu_state2;
-
-	string panel_gtk2;
-	string menu_gtk2;
-
 	internal ThemeConfigWindow (ThemeConfigApp app) {
 		Object (application: app, title: "Configure GTK theme");
 
@@ -185,17 +175,17 @@ class ThemeConfigWindow : ApplicationWindow {
 
 		// Set colors
 		Gdk.RGBA color = Gdk.RGBA ();
-		color.parse ("%s".printf (selectbg_value));
+		color.parse (selectbg_value);
 		selectbg_button.set_rgba (color);
-		color.parse ("%s".printf (selectfg_value));
+		color.parse (selectfg_value);
 		selectfg_button.set_rgba (color);
-		color.parse ("%s".printf (panelbg_value));
+		color.parse (panelbg_value);
 		panelbg_button.set_rgba (color);
-		color.parse ("%s".printf (panelfg_value));
+		color.parse (panelfg_value);
 		panelfg_button.set_rgba (color);
-		color.parse ("%s".printf (menubg_value));
+		color.parse (menubg_value);
 		menubg_button.set_rgba (color);
-		color.parse ("%s".printf (menufg_value));
+		color.parse (menufg_value);
 		menufg_button.set_rgba (color);
 
 		if (home_dir.get_child (".themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () || File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists ()) {
@@ -378,8 +368,6 @@ class ThemeConfigWindow : ApplicationWindow {
 	}
 
 	void on_config_set () {
-		reset_color_scheme ();
-		reset_config ();
 		set_color_scheme ();
 		write_config ();
 		notify_change ();
@@ -456,6 +444,16 @@ class ThemeConfigWindow : ApplicationWindow {
 	void write_config () {
 		
 		// Determine states
+		string select_state1;
+		string select_state2;
+		string panel_state1;
+		string panel_state2;
+		string menu_state1;
+		string menu_state2;
+
+		string panel_gtk2;
+		string menu_gtk2;
+
 		if (select_switch.get_active()) {
 			select_state1 = "/* select-on */";
 			select_state2 = "/* select-on */";
@@ -483,9 +481,8 @@ class ThemeConfigWindow : ApplicationWindow {
 		}
 
 		// Write config
-
 		try {
-			var dos = new DataOutputStream (gtk3_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
+			var dos = new DataOutputStream (gtk3_config_file.replace (null, false, FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("/* GTK theme preferences */\n");
 			string text = "%s\n@define-color selected_bg_color %s;\n@define-color selected_fg_color %s;\n@define-color theme_selected_bg_color @selected_bg_color;\n@define-color theme_selected_fg_color @selected_fg_color;\n%s\n%s\n@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\nPanelWidget,PanelApplet,PanelToplevel,PanelSeparator,.gnome-panel-menu-bar,PanelApplet > GtkMenuBar.menubar,PanelApplet > GtkMenuBar.menubar.menuitem,PanelMenuBar.menubar,PanelMenuBar.menubar.menuitem,PanelAppletFrame,UnityPanelWidget,.unity-panel{background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,0.8)));color:@panel_fg_color;}\n.unity-panel.menuitem,.unity-panel .menuitem{color:@panel_fg_color;}\n.unity-panel.menubar.menuitem:hover,.unity-panel.menubar .menuitem *:hover{border-color:shade(@panel_bg_color, 0.7);border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color, 0.97)),to(shade(@panel_bg_color, 0.82)));color:@panel_fg_color;}\nPanelApplet .button{border-color:transparent;border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,0.8)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nPanelApplet .button:active{border-color:shade(@panel_bg_color,0.8);border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(shade(@panel_bg_color,1.02),0.9)),to(shade(shade(@panel_bg_color,1.02),0.95)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nPanelApplet .button:prelight{border-color:transparent;border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,1.0)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nPanelApplet .button:active:prelight{border-color:shade(@panel_bg_color,0.8);border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(shade(@panel_bg_color,1.02),1.0)),to(shade(shade(@panel_bg_color,1.02),1.05)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nWnckPager,WnckTasklist{background-color:@panel_bg_color;}\n%s\n%s\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\nGtkTreeMenu.menu,GtkMenuToolButton.menu,GtkComboBox .menu{background-color:@menu_bg_color;}\n.primary-toolbar .button .menu,.toolbar .menu,.toolbar .primary-toolbar .menu,.menu{background-color:@menu_bg_color;color:@menu_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\n.menu.button:hover,.menu.button:active,.menu.button:active:insensitive,.menu.button:insensitive,.menu.button{background-color:@menu_bg_color;background-image:none;}\nGtkTreeMenu .menuitem *{color:@menu_fg_color;}\n.menu .menuitem:insensitive,.menu .menuitem *:insensitive{color:mix(@menu_fg_color,@menu_bg_color,0.5);}\n.menuitem .entry{border-color:shade(@menu_bg_color,0.7);border-image:none;background-color:@menu_bg_color;background-image:none;color:@menu_fg_color;}\n.menuitem .accelerator{color:alpha(@menu_fg_color,0.6);}\n.menuitem .accelerator:insensitive{color:alpha(mix(@menu_fg_color,@menu_bg_color,0.5),0.6);text-shadow:none;}\n.menuitem GtkCalendar,.menuitem GtkCalendar.button,.menuitem GtkCalendar.header,.menuitem GtkCalendar.view{border-color:shade(@menu_bg_color,0.8);border-image:none;background-color:@menu_bg_color;background-image:none;color:@menu_fg_color;}\n.menuitem GtkCalendar:inconsistent{color:mix(@menu_fg_color,@menu_bg_color,0.5);}\n%s".printf(select_state1, selectbg_value, selectfg_value, select_state2, panel_state1, panelbg_value, panelfg_value, panel_state2, menu_state1, menubg_value, menufg_value, menu_state2);
 			uint8[] data = text.data;
@@ -497,7 +494,7 @@ class ThemeConfigWindow : ApplicationWindow {
 			stderr.printf ("Could not write gtk3 configuration: %s\n", e.message);
 		}
 		try {
-			var dos = new DataOutputStream (gtk2_config_file.create (FileCreateFlags.REPLACE_DESTINATION));
+			var dos = new DataOutputStream (gtk2_config_file.replace (null, false, FileCreateFlags.REPLACE_DESTINATION));
 			dos.put_string ("# GTK theme preferences\n");
 			string text = "%s\n%s".printf(panel_gtk2, menu_gtk2);
 			uint8[] data = text.data;
