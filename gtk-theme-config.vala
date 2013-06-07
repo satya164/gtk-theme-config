@@ -473,7 +473,7 @@ class ThemeConfigWindow : ApplicationWindow {
 		if (menu_switch.get_active()) {
 			menu_state1 = "/* menu-on */";
 			menu_state2 = "/* menu-on */";
-			menu_gtk2 = "style\"gtk-theme-config-menu\"{\nbg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"\nfg[NORMAL]=\"%s\"\n}\nwidget_class\"*<GtkMenu>*\"style\"gtk-theme-config-menu\"\n".printf(menubg_value, menubg_value, menubg_value, menufg_value);
+			menu_gtk2 = "style\"gtk-theme-config-menu\"{\nbase[NORMAL]=\"%s\"\nbg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"\ntext[NORMAL]=\"%s\"\nfg[NORMAL]=\"%s\"\n}\nwidget_class\"*<GtkMenu>*\"style\"gtk-theme-config-menu\"\n".printf(menubg_value, menubg_value, menubg_value, menubg_value, menufg_value, menufg_value);
 		} else {
 			menu_state1 = "/* menu-off";
 			menu_state2 = "menu-off */";;
