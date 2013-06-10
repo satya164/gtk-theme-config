@@ -1,4 +1,4 @@
-Configure GTK theme
+Theme Configuration
 =====================
 
 A tool to configure the GTK theme.

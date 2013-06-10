@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Configure GTK theme
-GenericName=Configure GTK theme
-Comment=A tool to configure the GTK theme colors
+Name=Theme Configuration
+GenericName=Theme Configuration
+Comment=Configure GTK theme colors
 Exec=gtk-theme-config
 Terminal=false
 Type=Application

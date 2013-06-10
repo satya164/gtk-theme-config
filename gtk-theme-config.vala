@@ -40,7 +40,7 @@ class ThemeConfigWindow : ApplicationWindow {
 	string menufg_value;
 
 	internal ThemeConfigWindow (ThemeConfigApp app) {
-		Object (application: app, title: "Configure GTK theme");
+		Object (application: app, title: "Theme Configuration");
 
 		// Set window properties
 		this.window_position = WindowPosition.CENTER;
