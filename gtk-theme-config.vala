@@ -193,7 +193,7 @@ class ThemeConfigWindow : ApplicationWindow {
 
 	void create_widgets () {
 		// Create and setup widgets
-		var select_heading = new Label.with_mnemonic ("_<b>Custom selection colors</b>");
+		var select_heading = new Label.with_mnemonic ("_<b>Custom highlight colors</b>");
 		select_heading.set_use_markup (true);
 		select_heading.set_halign (Align.START);
 		var panel_heading = new Label.with_mnemonic ("_<b>Custom panel colors</b>");
@@ -203,9 +203,9 @@ class ThemeConfigWindow : ApplicationWindow {
 		menu_heading.set_use_markup (true);
 		menu_heading.set_halign (Align.START);
 
-		selectbg_label = new Label.with_mnemonic ("_Selection background");
+		selectbg_label = new Label.with_mnemonic ("_Highlight background");
 		selectbg_label.set_halign (Align.START);
-		selectfg_label = new Label.with_mnemonic ("_Selection text");
+		selectfg_label = new Label.with_mnemonic ("_Highlight text");
 		selectfg_label.set_halign (Align.START);
 		var panelbg_label = new Label.with_mnemonic ("_Panel background");
 		panelbg_label.set_halign (Align.START);
