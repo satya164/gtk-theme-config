@@ -456,7 +456,34 @@ class ThemeConfigWindow : ApplicationWindow {
 		if (panel_switch.get_active()) {
 			panel_state1 = "/* panel-on */";
 			panel_state2 = "/* panel-on */";
-			panel_gtk2 = "style\"gtk-theme-config-panel\"{\nbg[NORMAL]=\"%s\"\nbg[PRELIGHT]=shade(1.1,\"%s\")\nbg[ACTIVE]=shade(0.9,\"%s\")\nbg[SELECTED]=shade(0.97,\"%s\")\nfg[NORMAL]=\"%s\"\nfg[PRELIGHT]=\"%s\"\nfg[SELECTED]=\"%s\"\nfg[ACTIVE]=\"%s\"\n}\nwidget \"*PanelWidget*\" style \"gtk-theme-config-panel\"\nwidget \"*PanelApplet*\" style \"gtk-theme-config-panel\"\nwidget \"*fast-user-switch*\" style \"gtk-theme-config-panel\"\nwidget \"*CPUFreq*Applet*\" style \"gtk-theme-config-panel\"\nwidget \"*indicator-applet*\" style \"gtk-theme-config-panel\"\nclass \"PanelApp*\" style \"gtk-theme-config-panel\"\nclass \"PanelToplevel*\" style \"gtk-theme-config-panel\"\nwidget_class \"*PanelToplevel*\" style \"gtk-theme-config-panel\"\nwidget_class \"*notif*\" style \"gtk-theme-config-panel\"\nwidget_class \"*Notif*\" style \"gtk-theme-config-panel\"\nwidget_class \"*Tray*\" style \"gtk-theme-config-panel\" \nwidget_class \"*tray*\" style \"gtk-theme-config-panel\"\nwidget_class \"*computertemp*\" style \"gtk-theme-config-panel\"\nwidget_class \"*Applet*Tomboy*\" style \"gtk-theme-config-panel\"\nwidget_class \"*Applet*Netstatus*\" style \"gtk-theme-config-panel\"\nwidget \"*gdm-user-switch-menubar*\" style \"gtk-theme-config-panel\"\nwidget \"*Xfce*Panel*\" style \"gtk-theme-config-panel\"\nclass \"*Xfce*Panel*\" style \"gtk-theme-config-panel\"\n".printf(panelbg_value, panelbg_value, panelbg_value, panelbg_value, panelfg_value, panelfg_value, panelfg_value, panelfg_value);
+			panel_gtk2 = ("style \"gtk-theme-config-panel\" {\n" +
+					"\tbg[NORMAL] = \"%s\"\n" +
+					"\tbg[PRELIGHT] = shade(1.1,\"%s\")\n" +
+					"\tbg[ACTIVE] = shade(0.9,\"%s\")\n" +
+					"\tbg[SELECTED] = shade(0.97,\"%s\")\n" +
+					"\tfg[NORMAL] = \"%s\"\n" +
+					"\tfg[PRELIGHT] = \"%s\"\n" +
+					"\tfg[SELECTED] = \"%s\"\n" +
+					"\tfg[ACTIVE] = \"%s\"\n" +
+					"}\n\n" +
+					"widget \"*PanelWidget*\" style \"gtk-theme-config-panel\"\n" +
+					"widget \"*PanelApplet*\" style \"gtk-theme-config-panel\"\n" +
+					"widget \"*fast-user-switch*\" style \"gtk-theme-config-panel\"\n" +
+					"widget \"*CPUFreq*Applet*\" style \"gtk-theme-config-panel\"\n" +
+					"widget \"*indicator-applet*\" style \"gtk-theme-config-panel\"\n" +
+					"class \"PanelApp*\" style \"gtk-theme-config-panel\"\n" +
+					"class \"PanelToplevel*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*PanelToplevel*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*notif*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*Notif*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*Tray*\" style \"gtk-theme-config-panel\" \n" +
+					"widget_class \"*tray*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*computertemp*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*Applet*Tomboy*\" style \"gtk-theme-config-panel\"\n" +
+					"widget_class \"*Applet*Netstatus*\" style \"gtk-theme-config-panel\"\n" +
+					"widget \"*gdm-user-switch-menubar*\" style \"gtk-theme-config-panel\"\n" +
+					"widget \"*Xfce*Panel*\" style \"gtk-theme-config-panel\"\n" +
+					"class \"*Xfce*Panel*\" style \"gtk-theme-config-panel\"\n").printf (panelbg_value, panelbg_value, panelbg_value, panelbg_value, panelfg_value, panelfg_value, panelfg_value, panelfg_value);
 		} else {
 			panel_state1 = "/* panel-off";
 			panel_state2 = "panel-off */";
@@ -465,7 +492,15 @@ class ThemeConfigWindow : ApplicationWindow {
 		if (menu_switch.get_active()) {
 			menu_state1 = "/* menu-on */";
 			menu_state2 = "/* menu-on */";
-			menu_gtk2 = "style\"gtk-theme-config-menu\"{\nbase[NORMAL]=\"%s\"\nbg[NORMAL]=\"%s\"\nbg[ACTIVE]=\"%s\"\nbg[INSENSITIVE]=\"%s\"\ntext[NORMAL]=\"%s\"\nfg[NORMAL]=\"%s\"\n}\nwidget_class\"*<GtkMenu>*\"style\"gtk-theme-config-menu\"\n".printf(menubg_value, menubg_value, menubg_value, menubg_value, menufg_value, menufg_value);
+			menu_gtk2 = ("style \"gtk-theme-config-menu\" {\n" +
+					"\tbase[NORMAL] = \"%s\"\n" +
+					"\tbg[NORMAL] = \"%s\"\n" +
+					"\tbg[ACTIVE] = \"%s\"\n" +
+					"\tbg[INSENSITIVE] = \"%s\"\n" +
+					"\ttext[NORMAL] = \"%s\"\n" +
+					"\tfg[NORMAL] = \"%s\"\n" +
+					"}\n\n" +
+					"widget_class\"*<GtkMenu>*\"style\"gtk-theme-config-menu\"\n").printf (menubg_value, menubg_value, menubg_value, menubg_value, menufg_value, menufg_value);
 		} else {
 			menu_state1 = "/* menu-off";
 			menu_state2 = "menu-off */";;
@@ -475,8 +510,169 @@ class ThemeConfigWindow : ApplicationWindow {
 		// Write config
 		try {
 			var dos = new DataOutputStream (gtk3_config_file.replace (null, false, FileCreateFlags.REPLACE_DESTINATION));
-			dos.put_string ("/* GTK theme preferences */\n");
-			string text = "%s\n@define-color selected_bg_color %s;\n@define-color selected_fg_color %s;\n@define-color theme_selected_bg_color @selected_bg_color;\n@define-color theme_selected_fg_color @selected_fg_color;\n%s\n%s\n@define-color panel_bg_color %s;\n@define-color panel_fg_color %s;\nPanelWidget,PanelApplet,PanelToplevel,PanelSeparator,.gnome-panel-menu-bar,PanelApplet > GtkMenuBar.menubar,PanelApplet > GtkMenuBar.menubar.menuitem,PanelMenuBar.menubar,PanelMenuBar.menubar.menuitem,PanelAppletFrame,UnityPanelWidget,.unity-panel{background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,0.8)));color:@panel_fg_color;}\n.unity-panel.menuitem,.unity-panel .menuitem{color:@panel_fg_color;}\n.unity-panel.menubar.menuitem:hover,.unity-panel.menubar .menuitem *:hover{border-color:shade(@panel_bg_color, 0.7);border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color, 0.97)),to(shade(@panel_bg_color, 0.82)));color:@panel_fg_color;}\nPanelApplet .button{border-color:transparent;border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,0.8)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nPanelApplet .button:active{border-color:shade(@panel_bg_color,0.8);border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(shade(@panel_bg_color,1.02),0.9)),to(shade(shade(@panel_bg_color,1.02),0.95)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nPanelApplet .button:prelight{border-color:transparent;border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,1.0)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nPanelApplet .button:active:prelight{border-color:shade(@panel_bg_color,0.8);border-image:none;background-image:-gtk-gradient(linear,left top,left bottom,from(shade(shade(@panel_bg_color,1.02),1.0)),to(shade(shade(@panel_bg_color,1.02),1.05)));color:@panel_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\nWnckPager,WnckTasklist{background-color:@panel_bg_color;}\n%s\n%s\n@define-color menu_bg_color %s;\n@define-color menu_fg_color %s;\nGtkTreeMenu.menu,GtkMenuToolButton.menu,GtkComboBox .menu{background-color:@menu_bg_color;}\n.primary-toolbar .button .menu,.toolbar .menu,.toolbar .primary-toolbar .menu,.menu{border-style:none;background-image:none;background-color:@menu_bg_color;color:@menu_fg_color;box-shadow:none;text-shadow:none;-unico-inner-stroke-width:0;}\n.menu.button:hover,.menu.button:active,.menu.button:active:insensitive,.menu.button:insensitive,.menu.button{background-color:@menu_bg_color;background-image:none;}\nGtkTreeMenu .menuitem *{color:@menu_fg_color;}\n.menuitem,.menu .menuitem{background-color:transparent;}\n.menu .menuitem:active,.menu .menuitem:hover{background-color:@theme_selected_bg_color;}\n.menuitem.check,.menuitem.radio,.menuitem.check:hover,.menuitem.radio:hover,.menuitem.check:active,.menuitem.radio:active{background-color:transparent;}\n.menu .menuitem:insensitive,.menu .menuitem *:insensitive{color:mix(@menu_fg_color,@menu_bg_color,0.5);}\n.menuitem.arrow{color:alpha(@menu_fg_color, 0.6);}\n.menuitem .entry{border-color:shade(@menu_bg_color,0.7);border-image:none;background-color:@menu_bg_color;background-image:none;color:@menu_fg_color;}\n.menuitem .accelerator{color:alpha(@menu_fg_color,0.6);}\n.menuitem .accelerator:insensitive{color:alpha(mix(@menu_fg_color,@menu_bg_color,0.5),0.6);text-shadow:none;}\n.menuitem.separator{background-color:transparent;color:shade(@menu_bg_color, 0.9);}\n.menuitem GtkCalendar,.menuitem GtkCalendar.button,.menuitem GtkCalendar.header,.menuitem GtkCalendar.view{border-color:shade(@menu_bg_color,0.8);border-image:none;background-color:@menu_bg_color;background-image:none;color:@menu_fg_color;}\n.menuitem GtkCalendar:inconsistent{color:mix(@menu_fg_color,@menu_bg_color,0.5);}\n%s".printf(select_state1, selectbg_value, selectfg_value, select_state2, panel_state1, panelbg_value, panelfg_value, panel_state2, menu_state1, menubg_value, menufg_value, menu_state2);
+			dos.put_string ("/* Custom styles */\n\n");
+			string text = ("%s\n" +
+					"@define-color selected_bg_color %s;\n" +
+					"@define-color selected_fg_color %s;\n" +
+					"@define-color theme_selected_bg_color @selected_bg_color;\n" +
+					"@define-color theme_selected_fg_color @selected_fg_color;\n" +
+					"%s\n\n" +
+					"%s\n" +
+					"@define-color panel_bg_color %s;\n" +
+					"@define-color panel_fg_color %s;\n\n" +
+					"PanelWidget,\n" +
+					"PanelApplet,\n" +
+					"PanelToplevel,\n" +
+					"PanelSeparator,\n" +
+					"PanelApplet > GtkMenuBar.menubar,\n" +
+					"PanelApplet > GtkMenuBar.menubar.menuitem,\n" +
+					"PanelMenuBar.menubar,\n" +
+					"PanelMenuBar.menubar.menuitem,\n" +
+					"PanelAppletFrame,\n" +
+					"UnityPanelWidget,\n" +
+					".gnome-panel-menu-bar,\n" +
+					".unity-panel {\n" +
+					"\tbackground-image: -gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,0.8)));\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"}\n\n" +
+					".unity-panel.menuitem,\n" +
+					".unity-panel .menuitem {\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"}\n\n" +
+					".unity-panel.menubar.menuitem:hover,\n" +
+					".unity-panel.menubar .menuitem *:hover {\n" +
+					"\tborder-color: shade(@panel_bg_color, 0.7);\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-image: -gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color, 0.97)),to(shade(@panel_bg_color, 0.82)));\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"}\n\n" +
+					"PanelApplet .button {\n" +
+					"\tborder-color: transparent;\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-image: -gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,0.8)));\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"\tbox-shadow: none;\n" +
+					"\ttext-shadow: none;\n" +
+					"\t-unico-inner-stroke-width: 0;\n" +
+					"}\n\n" +
+					"PanelApplet .button:active {\n" +
+					"\tborder-color: shade(@panel_bg_color,0.8);\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-image: -gtk-gradient(linear,left top,left bottom,from(shade(shade(@panel_bg_color,1.02),0.9)),to(shade(shade(@panel_bg_color,1.02),0.95)));\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"\tbox-shadow: none;\n" +
+					"\ttext-shadow: none;\n" +
+					"\t-unico-inner-stroke-width: 0;\n" +
+					"}\n\n" +
+					"PanelApplet .button:prelight {\n" +
+					"\tborder-color: transparent;\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-image: -gtk-gradient(linear,left top,left bottom,from(shade(@panel_bg_color,1.2)),to(shade(@panel_bg_color,1.0)));\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"\tbox-shadow: none;\n" +
+					"\ttext-shadow: none;\n" +
+					"\t-unico-inner-stroke-width: 0;\n" +
+					"}\n\n" +
+					"PanelApplet .button:active:prelight {\n" +
+					"\tborder-color: shade(@panel_bg_color,0.8);\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-image: -gtk-gradient(linear,left top,left bottom,from(shade(shade(@panel_bg_color,1.02),1.0)),to(shade(shade(@panel_bg_color,1.02),1.05)));\n" +
+					"\tcolor: @panel_fg_color;\n" +
+					"\tbox-shadow: none;\n" +
+					"\ttext-shadow: none;\n" +
+					"\t-unico-inner-stroke-width: 0;\n" +
+					"}\n\n" +
+					"WnckPager,\n" +
+					"WnckTasklist {\n" +
+					"\tbackground-color: @panel_bg_color;\n" +
+					"}\n\n" +
+					"%s\n\n" +
+					"%s\n" +
+					"@define-color menu_bg_color %s;\n" +
+					"@define-color menu_fg_color %s;\n\n" +
+					"GtkTreeMenu.menu,\n" +
+					"GtkMenuToolButton.menu,\n" +
+					"GtkComboBox .menu {\n" +
+					"\tbackground-color: @menu_bg_color;\n" +
+					"}\n\n" +
+					".primary-toolbar .button .menu,\n" +
+					".toolbar .menu,\n" +
+					".toolbar .primary-toolbar .menu,\n" +
+					".menu {\n" +
+					"\tborder-style: none;\n" +
+					"\tbackground-image: none;\n" +
+					"\tbackground-color: @menu_bg_color;\n" +
+					"\tcolor: @menu_fg_color;\n" +
+					"\tbox-shadow: none;\n" +
+					"\ttext-shadow: none;\n" +
+					"\t-unico-inner-stroke-width: 0;\n" +
+					"}\n\n" +
+					".menu.button:hover,\n" +
+					".menu.button:active,\n" +
+					".menu.button:active:insensitive,\n" +
+					".menu.button:insensitive,\n" +
+					".menu.button {\n" +
+					"\tbackground-color: @menu_bg_color;\n" +
+					"\tbackground-image: none;\n" +
+					"}\n\n" +
+					"GtkTreeMenu .menuitem * {\n" +
+					"\tcolor: @menu_fg_color;\n" +
+					"}\n\n" +
+					".menuitem,\n" +
+					".menu .menuitem {\n" +
+					"\tbackground-color: transparent;\n" +
+					"}\n\n" +
+					".menu .menuitem:active,\n" +
+					".menu .menuitem:hover {\n" +
+					"\tbackground-color: @theme_selected_bg_color;\n" +
+					"}\n\n" +
+					".menuitem.check,\n" +
+					".menuitem.radio,\n" +
+					".menuitem.check:hover,\n" +
+					".menuitem.radio:hover,\n" +
+					".menuitem.check:active,\n" +
+					".menuitem.radio:active {\n" +
+					"\tbackground-color: transparent;\n" +
+					"}\n\n" +
+					".menu .menuitem:insensitive,\n" +
+					".menu .menuitem *:insensitive {\n" +
+					"\tcolor: mix(@menu_fg_color,@menu_bg_color,0.5);\n" +
+					"}\n\n" +
+					".menuitem.arrow {\n" +
+					"\tcolor: alpha(@menu_fg_color, 0.6);\n" +
+					"}\n\n" +
+					".menuitem .entry {\n" +
+					"\tborder-color: shade(@menu_bg_color,0.7);\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-color: @menu_bg_color;\n" +
+					"\tbackground-image: none;\n" +
+					"\tcolor: @menu_fg_color;\n" +
+					"}\n\n" +
+					".menuitem .accelerator {\n" +
+					"\tcolor: alpha(@menu_fg_color,0.6);\n" +
+					"}\n\n" +
+					".menuitem .accelerator:insensitive {\n" +
+					"\tcolor: alpha(mix(@menu_fg_color,@menu_bg_color,0.5),0.6);\n" +
+					"\ttext-shadow: none;\n" +
+					"}\n\n" +
+					".menuitem.separator {\n" +
+					"\tbackground-color: transparent;\n" +
+					"\tcolor: shade(@menu_bg_color, 0.9);\n" +
+					"}\n\n" +
+					".menuitem GtkCalendar,\n" +
+					".menuitem GtkCalendar.button,\n" +
+					".menuitem GtkCalendar.header,\n" +
+					".menuitem GtkCalendar.view {\n" +
+					"\tborder-color: shade(@menu_bg_color,0.8);\n" +
+					"\tborder-image: none;\n" +
+					"\tbackground-color: @menu_bg_color;\n" +
+					"\tbackground-image: none;\n" +
+					"\tcolor: @menu_fg_color;\n" +
+					"}\n\n" +
+					".menuitem GtkCalendar:inconsistent {\n" +
+					"\tcolor: mix(@menu_fg_color,@menu_bg_color,0.5);\n" +
+					"}\n\n" +
+					"%s\n").printf (select_state1, selectbg_value, selectfg_value, select_state2, panel_state1, panelbg_value, panelfg_value, panel_state2, menu_state1, menubg_value, menufg_value, menu_state2);
 			uint8[] data = text.data;
 			long written = 0;
 			while (written < data.length) {
@@ -487,7 +683,7 @@ class ThemeConfigWindow : ApplicationWindow {
 		}
 		try {
 			var dos = new DataOutputStream (gtk2_config_file.replace (null, false, FileCreateFlags.REPLACE_DESTINATION));
-			dos.put_string ("# GTK theme preferences\n");
+			dos.put_string ("# Custom styles\n\n");
 			string text = "%s\n%s".printf(panel_gtk2, menu_gtk2);
 			uint8[] data = text.data;
 			long written = 0;
