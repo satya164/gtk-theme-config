@@ -6,4 +6,5 @@ Exec=gtk-theme-config
 Terminal=false
 Type=Application
 Icon=gtk-theme-config
-Categories=GNOME;Settings;Utility;X-XFCE-SettingsDialog;X-XFCE-PersonalSettings;
+Categories=GNOME;XFCE;Settings;Utility;X-GNOME-Settings-Panel;X-GNOME-PersonalSettings;X-XFCE-SettingsDialog;X-XFCE-PersonalSettings;
+X-GNOME-Settings-Panel=gtk-theme-config
