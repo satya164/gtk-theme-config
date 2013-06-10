@@ -188,18 +188,6 @@ class ThemeConfigWindow : ApplicationWindow {
 		color.parse (menufg_value);
 		menufg_button.set_rgba (color);
 
-		unowned string? desktop_session =  Environment.get_variable ("DESKTOP_SESSION");
-
-		if (desktop_session == "gnome") {
-			if (home_dir.get_child (".themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists () || File.parse_name ("/usr/share/themes/%s/gtk-3.0/gtk.gresource".printf (theme_name)).query_exists ()) {
-				selectbg_label.set_sensitive (false);
-				selectfg_label.set_sensitive (false);
-				selectbg_button.set_sensitive (false);
-				selectfg_button.set_sensitive (false);
-				select_switch.set_sensitive (false);
-			}
-		}
-
 		apply_button.set_sensitive (false);
 	}
 
