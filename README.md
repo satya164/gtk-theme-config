@@ -1,7 +1,7 @@
 Theme Configuration
 =====================
 
-A tool to configure the GTK theme.
+Configure GTK theme colors.
 
 ### Introduction
 
