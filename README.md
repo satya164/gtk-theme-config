@@ -19,6 +19,8 @@ Copyright (C) [Satyajit Sahoo](mailto:satyajit.happy@gmail.com)
 
 ### Build dependencies
 
+`gcc`
+
 `glib2-devel`
 
 `gtk3-devel >= 3.4.2`
