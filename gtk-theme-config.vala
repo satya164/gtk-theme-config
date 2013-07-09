@@ -391,10 +391,12 @@ class ThemeConfigWindow : ApplicationWindow {
 		} catch (Error e) {
 			stderr.printf ("Could not set color scheme for gtk2: %s\n", e.message);
 		}
-		try {
-			Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
-		} catch (Error e) {
-			stderr.printf ("Could not set color scheme for xfce: %s\n", e.message);
+		if (File.parse_name ("/usr/bin/xfconf-query").query_exists ()) {
+			try {
+				Process.spawn_command_line_sync ("xfconf-query -n -c xsettings -p /Gtk/ColorScheme -t string -s %s".printf (color_scheme));
+			} catch (Error e) {
+				stderr.printf ("Could not set color scheme for xfce: %s\n", e.message);
+			}
 		}
 	}
 
@@ -409,10 +411,12 @@ class ThemeConfigWindow : ApplicationWindow {
 		} catch (Error e) {
 			stderr.printf ("Could not reset color scheme for gtk2: %s\n", e.message);
 		}
-		try {
-			Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
-		} catch (Error e) {
-			stderr.printf ("Could not reset color scheme for xfce: %s\n", e.message);
+		if (File.parse_name ("/usr/bin/xfconf-query").query_exists ()) {
+			try {
+				Process.spawn_command_line_sync ("xfconf-query -c xsettings -p /Gtk/ColorScheme -r");
+			} catch (Error e) {
+				stderr.printf ("Could not reset color scheme for xfce: %s\n", e.message);
+			}
 		}
 	}
 			
@@ -699,7 +703,7 @@ class ThemeConfigWindow : ApplicationWindow {
 		try {
 			Process.spawn_command_line_async("notify-send -h int:transient:1 -i \"gtk-theme-config\" \"Changes applied.\" \"You might need to restart running applications.\"");
 		} catch (Error e) {
-			stderr.printf ("%s", e.message);
+			stderr.printf ("Could not display notification: %s\n", e.message);
 		}
 	}
 }
