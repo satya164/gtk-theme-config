@@ -230,8 +230,8 @@ class ThemeConfigWindow : ApplicationWindow {
 		menu_switch = new Switch ();
 		menu_switch.set_halign (Align.END);
 
-		revert_button = new Button.from_stock(Stock.REVERT_TO_SAVED);
-		apply_button = new Button.from_stock (Stock.APPLY);
+		revert_button = new Button.with_mnemonic ("Reset");
+		apply_button = new Button.with_mnemonic ("Apply");
 
 		// Buttons
 		var buttons = new ButtonBox (Orientation.HORIZONTAL);
