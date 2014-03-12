@@ -8,3 +8,6 @@ Type=Application
 Icon=gtk-theme-config
 Categories=GNOME;GTK;Settings;DesktopSettings;X-XFCE-SettingsDialog;X-XFCE-PersonalSettings;
 Keywords=color;gtk;highlight;theme;widget;
+
+X-GNOME-Gettext-Domain=gtk-theme-config
+

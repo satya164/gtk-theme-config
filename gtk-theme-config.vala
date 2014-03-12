@@ -1,5 +1,10 @@
 using Gtk;
 
+// add all strings from the desktop files here that need
+// to be translated (Title and generic name are already
+// here). Update accordingly.
+const string COMMENT = N_("Configure GTK theme colors");
+
 class ThemeConfigWindow : ApplicationWindow {
 	Label selectbg_label;
 	Label selectfg_label;
@@ -40,7 +45,7 @@ class ThemeConfigWindow : ApplicationWindow {
 	string menufg_value;
 
 	internal ThemeConfigWindow (ThemeConfigApp app) {
-		Object (application: app, title: "Theme Configuration");
+		Object (application: app, title: _("Theme Configuration"));
 
 		// Set window properties
 		this.window_position = WindowPosition.CENTER;
@@ -193,27 +198,27 @@ class ThemeConfigWindow : ApplicationWindow {
 
 	void create_widgets () {
 		// Create and setup widgets
-		var select_heading = new Label.with_mnemonic ("_<b>Custom highlight colors</b>");
+		var select_heading = new Label ("<b>" + _("Custom highlight colors") + "</b>");
 		select_heading.set_use_markup (true);
 		select_heading.set_halign (Align.START);
-		var panel_heading = new Label.with_mnemonic ("_<b>Custom panel colors</b>");
+		var panel_heading = new Label ("<b>" + _("Custom panel colors") + "</b>");
 		panel_heading.set_use_markup (true);
 		panel_heading.set_halign (Align.START);
-		var menu_heading = new Label.with_mnemonic ("_<b>Custom menu colors</b>");
+		var menu_heading = new Label ("<b>" + _("Custom menu colors") + "</b>");
 		menu_heading.set_use_markup (true);
 		menu_heading.set_halign (Align.START);
 
-		selectbg_label = new Label.with_mnemonic ("_Highlight background");
+		selectbg_label = new Label (_("Highlight background"));
 		selectbg_label.set_halign (Align.START);
-		selectfg_label = new Label.with_mnemonic ("_Highlight text");
+		selectfg_label = new Label (_("Highlight text"));
 		selectfg_label.set_halign (Align.START);
-		var panelbg_label = new Label.with_mnemonic ("_Panel background");
+		var panelbg_label = new Label (_("Panel background"));
 		panelbg_label.set_halign (Align.START);
-		var panelfg_label = new Label.with_mnemonic ("_Panel text");
+		var panelfg_label = new Label (_("Panel text"));
 		panelfg_label.set_halign (Align.START);
-		var menubg_label = new Label.with_mnemonic ("_Menu background");
+		var menubg_label = new Label (_("Menu background"));
 		menubg_label.set_halign (Align.START);
-		var menufg_label = new Label.with_mnemonic ("_Menu text");
+		var menufg_label = new Label (_("Menu text"));
 		menufg_label.set_halign (Align.START);
 
 		selectbg_button = new ColorButton ();
@@ -230,8 +235,8 @@ class ThemeConfigWindow : ApplicationWindow {
 		menu_switch = new Switch ();
 		menu_switch.set_halign (Align.END);
 
-		revert_button = new Button.with_mnemonic ("Reset");
-		apply_button = new Button.with_mnemonic ("Apply");
+		revert_button = new Button.with_label (_("Reset"));
+		apply_button = new Button.with_label (_("Apply"));
 
 		// Buttons
 		var buttons = new ButtonBox (Orientation.HORIZONTAL);
