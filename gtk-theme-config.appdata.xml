@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014 Satyajit Sahoo <satyajit.happy@gmail.com> -->
+<application>
+    <id type="desktop">gtk-theme-config.desktop</id>
+    <licence>GFDL</licence>
+    <name>Theme Configuration</name>
+    <summary>Configure GTK theme colors</summary>
+    <description>
+        <p>
+        The tool allows anyone to change some basic elements of a GTK theme
+        easily (both GTK2 and GTK3) with a simple interface.
+        </p>
+        <p>Features:</p>
+        <ul>
+            <li>Customize selection background color</li>
+            <li>Customize Xfce panel, Gnome panel and Unity panel</li>
+            <li>Customize menu colors</li>
+        </ul>
+    </description>
+    <screenshots>
+        <screenshot type="default" width="704" height="396">https://raw.github.com/satya164/gtk-theme-config/master/gtk-theme-config.png</screenshot>
+    </screenshots>
+    <url type="homepage">https://github.com/satya164/gtk-theme-config</url>
+    <updatecontact>satyajit.happy@gmail.com</updatecontact>
+</application>
