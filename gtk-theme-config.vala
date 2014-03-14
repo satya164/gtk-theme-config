@@ -332,36 +332,48 @@ class ThemeConfigWindow : ApplicationWindow {
         color_rgb =  selectbg_button.get_rgba ();
         rgb_to_hex ();
         selectbg_value = color_hex;
+
+        select_switch.set_active (true);
     }
 
     void on_selectfg_color_set () {
         color_rgb =  selectfg_button.get_rgba ();
         rgb_to_hex ();
         selectfg_value = color_hex;
+
+        select_switch.set_active (true);
     }
 
     void on_panelbg_color_set () {
         color_rgb =  panelbg_button.get_rgba ();
         rgb_to_hex ();
         panelbg_value = color_hex;
+
+        panel_switch.set_active (true);
     }
 
     void on_panelfg_color_set () {
         color_rgb =  panelfg_button.get_rgba ();
         rgb_to_hex ();
         panelfg_value = color_hex;
+
+        panel_switch.set_active (true);
     }
 
     void on_menubg_color_set () {
         color_rgb =  menubg_button.get_rgba ();
         rgb_to_hex ();
         menubg_value = color_hex;
+
+        menu_switch.set_active (true);
     }
 
     void on_menufg_color_set () {
         color_rgb =  menufg_button.get_rgba ();
         rgb_to_hex ();
         menufg_value = color_hex;
+
+        menu_switch.set_active (true);
     }
 
     void on_config_set () {
@@ -424,7 +436,7 @@ class ThemeConfigWindow : ApplicationWindow {
             }
         }
     }
-            
+
     void reset_config () {
         try {
             if (gtk3_config_file.query_exists ()) {
@@ -443,7 +455,7 @@ class ThemeConfigWindow : ApplicationWindow {
     }
 
     void write_config () {
-        
+
         // Determine states
         string select_state1;
         string select_state2;
