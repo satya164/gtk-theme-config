@@ -1,0 +1,70 @@
+# Oriya translations for gtk-theme-config package.
+# Copyright (C) 2014 THE gtk-theme-config'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gtk-theme-config package.
+# Satyajit Sahoo <satyajit.happy@gmail.com>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gtk-theme-config 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-14 17:28+0530\n"
+"PO-Revision-Date: 2014-03-14 17:28+0530\n"
+"Last-Translator: Satyajit Sahoo <satyajit.happy@gmail.com>\n"
+"Language-Team: Oriya\n"
+"Language: or\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gtk-theme-config.vala:6
+msgid "Configure GTK theme colors"
+msgstr "ଥିମ୍ ରଂଗ ଵବଳାଂତୁ"
+
+#: gtk-theme-config.vala:48
+msgid "Theme Configuration"
+msgstr "ଥିମ୍  ସଂପାଦନ"
+
+#: gtk-theme-config.vala:201
+msgid "Custom highlight colors"
+msgstr "ମୁଖ୍ଯ ରଂଗ"
+
+#: gtk-theme-config.vala:204
+msgid "Custom panel colors"
+msgstr "ପ୍ଯାନେଲ ରଂଗ"
+
+#: gtk-theme-config.vala:207
+msgid "Custom menu colors"
+msgstr "ମେନୁ ରଂଗ"
+
+#: gtk-theme-config.vala:211
+msgid "Highlight background"
+msgstr "ମୁଖ୍ଯ ପ୍ରୁଷ୍ଠଭୂମି ରଂଗ"
+
+#: gtk-theme-config.vala:213
+msgid "Highlight text"
+msgstr "ମୁଖ୍ଯ ଅକ୍ଷର  ରଂଗ"
+
+#: gtk-theme-config.vala:215
+msgid "Panel background"
+msgstr "ପ୍ଯାନେଲ ପ୍ରୁଷ୍ଠଭୂମି ରଂଗ"
+
+#: gtk-theme-config.vala:217
+msgid "Panel text"
+msgstr "ପ୍ଯାନେଲ ଅକ୍ଷର ରଂଗ"
+
+#: gtk-theme-config.vala:219
+msgid "Menu background"
+msgstr "ମେନୁ ପ୍ରୁଷ୍ଠଭୂମି ରଂଗ"
+
+#: gtk-theme-config.vala:221
+msgid "Menu text"
+msgstr "ମେନୁ ଅକ୍ଷର  ରଂଗ"
+
+#: gtk-theme-config.vala:238
+msgid "Reset"
+msgstr "ରିସେଟ କରନ୍ତୁ"
+
+#: gtk-theme-config.vala:239
+msgid "Apply"
+msgstr "ପ୍ରୟୋଗ କରନ୍ତୁ"
