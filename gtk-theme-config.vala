@@ -607,7 +607,8 @@ class ThemeConfigWindow : ApplicationWindow {
 					".primary-toolbar .button .menu,\n" +
 					".toolbar .menu,\n" +
 					".toolbar .primary-toolbar .menu,\n" +
-					".menu {\n" +
+					".menu,\n" +
+					"#toolbar-popup {\n" +
 					"\tborder-style: none;\n" +
 					"\tbackground-image: none;\n" +
 					"\tbackground-color: @menu_bg_color;\n" +
