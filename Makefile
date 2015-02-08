@@ -1,5 +1,5 @@
 VERSION=0.1
-CC=valac
+VALAC=valac
 CFLAGS=--pkg gtk+-3.0
 LDFLAGS=-X -lm
 GETTEXT_PACKAGE=gtk-theme-config
@@ -18,7 +18,7 @@ INSTALL_DATA=$(INSTALL) -Dpm 0644
 all: $(BINARY)
 
 $(BINARY): $(SOURCE)
-	$(CC) $(VALAFLAGS) $(CFLAGS) $(LDFLAGS) $(SOURCE) -o $(BINARY)
+	$(VALAC) $(VALAFLAGS) $(CFLAGS) $(LDFLAGS) $(SOURCE) -o $(BINARY)
 
 clean:
 	$(CLEAN) $(BINARY)
