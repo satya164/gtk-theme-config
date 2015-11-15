@@ -1,0 +1,70 @@
+# Norwegian translations for gtk-theme-config package.
+# Copyright (C) 2015 THE gtk-theme-config'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gtk-theme-config package.
+# Per-Henrik Kvalnes <perhenrik.kvalnes@gmail.com>, 2015
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gtk-theme-config 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-11 20:39+0100\n"
+"PO-Revision-Date: 2014-03-11 20:40+0100\n"
+"Last-Translator: Per-Henrik Kvalnes <perhenrik.kvalnes@gmail.com>, 2015\n"
+"Language-Team: Norsk\n"
+"Language: nb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gtk-theme-config.vala:6
+msgid "Configure GTK theme colors"
+msgstr "Konfigurer GTK tema farger"
+
+#: gtk-theme-config.vala:48
+msgid "Theme Configuration"
+msgstr "Tema Konfigurasjon"
+
+#: gtk-theme-config.vala:201
+msgid "Custom highlight colors"
+msgstr "Egendefinerte highlight farger"
+
+#: gtk-theme-config.vala:204
+msgid "Custom panel colors"
+msgstr "Egendefinerte panelfarger"
+
+#: gtk-theme-config.vala:207
+msgid "Custom menu colors"
+msgstr "Egendefinerte menyfarger"
+
+#: gtk-theme-config.vala:211
+msgid "Highlight background"
+msgstr "Highlight bakgrunn"
+
+#: gtk-theme-config.vala:213
+msgid "Highlight text"
+msgstr "Highlight text"
+
+#: gtk-theme-config.vala:215
+msgid "Panel background"
+msgstr "Panelbakgrunn"
+
+#: gtk-theme-config.vala:217
+msgid "Panel text"
+msgstr "Paneltekst"
+
+#: gtk-theme-config.vala:219
+msgid "Menu background"
+msgstr "Menybakgrunn"
+
+#: gtk-theme-config.vala:221
+msgid "Menu text"
+msgstr "Menytekst"
+
+#: gtk-theme-config.vala:238
+msgid "Reset"
+msgstr "Start på nytt"
+
+#: gtk-theme-config.vala:239
+msgid "Apply"
+msgstr "Sett konfigurasjon"
